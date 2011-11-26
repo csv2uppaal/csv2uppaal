@@ -1,0 +1,33 @@
+"PROTOCOL";"Enhanced BAwPC";"SET";4;"Cell D1: Medium capacity";;;;;;;;;;;
+;;"Cell C1: Choice of Medium: SET, BAG, FIFO, STUTT_FIFO";;;;;;;;;;;;;
+"ROLE";"PARTICIPANT";;;;;;;;;;;;;;
+"STATES";;"Active";"Canceling";"Completed";"Closing";"Compensating";"FailingActive";"FailingCanceling";"FailingCompensating";"NotCompleting";"Exiting";"EndedCanceled*";"EndedClosed*";"EndedCompensated*";"Ended*"
+"OUT";"Exit_p";",Exiting";;;;;;;;;",Exiting";;;;
+"OUT";"Completed_p";",Completed";;",Completed";;;;;;;;;;;
+"OUT";"Fail_p";",FailingActive";",FailingCanceling";;;",FailingCompensating";",FailingActive";",FailingCanceling";",FailingCompensating";;;;;;
+"OUT";"CannotComplete_p";",NotCompleting";;;;;;;;",NotCompleting";;;;;
+"OUT";"Canceled_p";;",Ended";;;;;;;;;",EndedCanceled";;;
+"OUT";"Closed_p";;;;",Ended";;;;;;;;",EndedClosed";;
+"OUT";"Compensated_p";;;;;",Ended";;;;;;;;",EndedCompensated";
+"IN";"Cancel_c";",Canceling";",Canceling";"Completed_p,Completed";",Closing";",Compensating";"Fail_p,FailingActive";"Fail_p,FailingCanceling";",FailingCompensating";"CannotComplete_p,NotCompleting";"Exit_p,Exiting";"Canceled_p,EndedCanceled";",EndedClosed";",EndedCompensated";",Ended"
+"IN";"Close_c";",Invalid";",Invalid";",Closing";",Closing";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedCanceled";"Closed_p,EndedClosed";",EndedCompensated";",Ended"
+"IN";"Compensate_c";",Invalid";",Invalid";",Compensating";",Invalid";",Compensating";",Invalid";",Invalid";"Fail_p,FailingCompensating";",Invalid";",Invalid";",EndedCanceled";",EndedClosed";"Compensated_p,EndedCompensated";",Ended"
+"IN";"Failed_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Ended";",Ended";",Invalid";",Invalid";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended"
+"IN";"Exited_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended"
+"IN";"NotCompleted_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended"
+;;;;;;;;;;;;;;;
+"ROLE";"COORDINATOR";;;;;;;;;;;;;;
+"STATES";;"Active";"Canceling";"Completed";"Closing";"Compensating";"FailingActive";"FailingCanceling";"FailingCompensating";"NotCompleting";"Exiting";"EndedFailed*";"EndedExited*";"EndedNotCompleted*";"Ended*"
+"OUT";"Cancel_c";",Canceling";",Canceling";;;;;;;;;;;;
+"OUT";"Close_c";;;",Closing";",Closing";;;;;;;;;;
+"OUT";"Compensate_c";;;",Compensating";;",Compensating";;;;;;;;;
+"OUT";"Failed_c";;;;;;",Ended";",Ended";",Ended";;;",EndedFailed";;;
+"OUT";"Exited_c";;;;;;;;;;",Ended";;",EndedExited";;
+"OUT";"NotCompleted_c";;;;;;;;;",Ended";;;;",EndedNotCompleted";
+"IN";"Exit_p";",Exiting";",Exiting";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Exiting";",EndedFailed";"Exited_c,EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Completed_p";",Completed";",Completed";",Completed";"Close_c,Closing";"Compensate_c,Compensating";",Invalid";",Invalid";",FailingCompensating";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Fail_p";",FailingActive";",FailingCanceling";",Invalid";",Invalid";",FailingCompensating";",FailingActive";",FailingCanceling";",FailingCompensating";",Invalid";",Invalid";"Failed_c,EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"CannotComplete_p";",NotCompleting";",NotCompleting";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",NotCompleting";",Invalid";",EndedFailed";",EndedExited";"NotCompleted_c,EndedNotCompleted";",Ended"
+"IN";"Canceled_p";",Invalid";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Closed_p";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Compensated_p";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"

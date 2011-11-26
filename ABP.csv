@@ -1,0 +1,15 @@
+"PROTOCOL";"Alternating Bit Protocol";"STUTT_FIFO";4;"Cell D1: size of communication buffers";;;;
+;;"Cell C1: selection of communication SET, BAG, FIFO, STUTT_FIFO";;;;;;
+"ROLE";"SENDER";;;;;;;
+"STATES";;"Q0";"Q1";"Q2";"Q3";"Q4";"Q5";"Ended"
+"OUT";"mesg0";",Q1";",Q1";;;",Q1";;
+"OUT";"mesg1";;;",Q3";",Q3";;",Q3";
+"IN";"ack0";;",Q2";"mesg1,Q3";",Q5";;"mesg1,Q3";
+"IN";"ack1";"mesg0,Q1";",Q0";;",Q4";"mesg0,Q1";;
+;;;;;;;;
+"ROLE";"RECEIVER";;;;;;;
+"STATES";;"Q0";"Q1";"Q2";"Q3";"Q4";"Q5";"Ended"
+"OUT";"ack0";;;",Q0";;",Q0";;
+"OUT";"ack1";;",Q3";;;;",Q3";
+"IN";"mesg0";",Q2";",Invalid";"ack0,Q0";",Q4";"ack0,Q0";;
+"IN";"mesg1";",Q1";"ack1,Q3";;",Q5";",Invalid";"ack1,Q3";

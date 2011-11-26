@@ -1,0 +1,22 @@
+"PROTOCOL";"STP";"STUTT_FIFO";4;"Cell D1: Medium capacity"
+;;"Cell C1: selection of communication SET, BAG, FIFO, STUTT_FIFO";;
+"ROLE";"A";;;
+"STATES";;"Active";"AwaitingB";"Ended*"
+"OUT*";"exitB";",Active";;
+"IN";"preparingB";",AwaitingB";",AwaitingB";",Invalid"
+"IN";"exitedB";;",Ended";",Ended"
+;;;;
+;;;;
+"ROLE";"B";;;
+"STATES";;"Active";"AwaitingC";"Ended*"
+"OUT";"preparingB";;",AwaitingC";
+"OUT";"exitC";;",AwaitingC";
+"OUT";"exitedB";;;",Ended"
+"IN";"exitB";"preparingB,AwaitingC";;
+"IN";"exitedC";;"exitedB,Ended";
+;;;;
+;;;;
+"ROLE";"C";;;
+"STATES";;"Active";"Ended*";
+"OUT";"exitedC";;",Ended";
+"IN";"exitC";"exitedC,Ended";;
