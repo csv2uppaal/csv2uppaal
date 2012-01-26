@@ -67,6 +67,7 @@ opts = OptionParser.new do |opts|
 end
 
 opts.parse!
+
 begin 
   ARGV.each do |arg|
     case arg
@@ -84,14 +85,14 @@ begin
         raise ArgumentError, "More than one .csv file given at commandline."
       end
       else 
-        raise ArgumentError, "Invalid FileType"
+        raise ArgumentError, "Invalid FileType. Only .csv or .xml files accepted."
     end
   end
 rescue => e
-  puts e.inspect
-  puts e.class
+  puts "Error: #{e.message} [#{e.class}]"
   puts opts.help
 end
+
 # filename = $options[:filename] || "inputfile.xml" # If no filename given, default is inputfile.xml
 =begin
 THIS=$(basename $0)
