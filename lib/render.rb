@@ -9,15 +9,15 @@ class Render
   def self.renderize(protocol)
     @protocol = protocol
 	
-    dir_path = $options[:filename].nil? ? "./" : File.dirname($options[:filename])
-    base_name = $options[:protocol].nil? ? "final" : File.basename($options[:protocol], ".csv") 
+    dir_path = File.dirname($options[:filename]) # TODO: Check OUT_DIR - the same
+    protocol_name = $options[:protocol]
 
-    uppaal_file          = File.open("#{dir_path}/#{base_name}.xml", "w")
-    query_file           = File.open("#{dir_path}/#{base_name}.q"  , "w")
-    query_file_overflow  = File.open("#{dir_path}/#{base_name}-overflow.q"  , "w")
-    query_file_invalid   = File.open("#{dir_path}/#{base_name}-invalid.q"  , "w")
-    query_file_deadlock  = File.open("#{dir_path}/#{base_name}-deadlock.q"  , "w")
-    query_file_ended     = File.open("#{dir_path}/#{base_name}-ended.q"  , "w")
+    uppaal_file          = File.open("#{dir_path}/#{protocol_name}.xml", "w")
+    query_file           = File.open("#{dir_path}/#{protocol_name}.q"  , "w")
+    query_file_overflow  = File.open("#{dir_path}/#{protocol_name}-overflow.q"  , "w")
+    query_file_invalid   = File.open("#{dir_path}/#{protocol_name}-invalid.q"  , "w")
+    query_file_deadlock  = File.open("#{dir_path}/#{protocol_name}-deadlock.q"  , "w")
+    query_file_ended     = File.open("#{dir_path}/#{protocol_name}-ended.q"  , "w")
     
     # Protocol analysis and statistics printed out 
     STDERR.puts " " 

@@ -7,9 +7,23 @@
 
 require "optparse"
 
+libdir = File.join(File.dirname(__FILE__), '..', 'lib')
+
+$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include? libdir
+
+require "optparse"
+require 'rexml/document'
+require "helper"
+require "protocol_object"
+require "parser"
+require "render"
+
+include REXML
+
+
 CSV2UPPAAL_VERSION = '1.2'
 
-$cml_options = {}
+$options = {}
 
 opts = OptionParser.new do |opts|
   opts.banner = "csv2uppaal #{CSV2UPPAAL_VERSION} - csv to uppaal conversion tool\nUsage: csv2uppaal [options] [filename.csv]"
@@ -18,38 +32,38 @@ opts = OptionParser.new do |opts|
   opts.on("-o", 
           "--[no-]optimize", 
           "Sets multiple channels optimization on.") do |o|
-    $cml_options[:optimize] = o
+    $options[:optimize] = o
   end
   
   ms = [:Set, :Bag, :Fifo, :Stutt, :Lossy]
   m_all = ms + ms.map{|m| m.to_s.upcase} + ms.map{|m| m.to_s.downcase}
   opts.on("-m", "--medium MEDIUM", m_all,
                 "Sets medium type (set, bag, fifo, lossy, stutt)") do |m|
-    $cml_options[:medium] = m.to_s.upcase
+    $options[:medium] = m.to_s.upcase
   end
   
   opts.on("-c", "--capacity VALUE", Integer, "Sets channel capacity") do |c|
-    $cml_options[:capacity] = c.to_i
+    $options[:capacity] = c
   end
   
-  opts.on("-t", "--trace VALUE", ["0", "1"], "Trace: 0 for any trace, 1 for shortest trace") do |t|
-    $cml_options[:trace] = t.to_i
+  opts.on("-t", "--trace VALUE", ["0", "1"], Integer, "Trace: 0 for any trace, 1 for shortest trace") do |t|
+    $options[:trace] = t
   end
   
   opts.on("-i", "--ignore", "All messages treated as ordered (ignore unordered flag)") do 
-    $cml_options[:ignore] = true
+    $options[:ignore] = true
   end
   
   opts.on("-f", "--fairness", "Termination under fairness (all executions eventually terminate)" ) do 
-    $cml_options[:timed] = true
+    $options[:timed] = true
   end
   
   opts.on("-x", "--min-delay VALUE", Integer, "Sets MIN_DELAY constant value") do |x|
-    $cml_options[:min_delay] = x.to_i
+    $options[:min_delay] = x
   end
 
-  opts.on("-y", "--tire-out VALUE", Integer, "Sets TIRE_OUT constant value") do |t|
-    $cml_options[:tire_out] = t.to_i
+  opts.on("-y", "--tire-out VALUE", Integer, "Sets TIRE_OUT constant value") do |y|
+    $options[:tire_out] = y
   end
 
   opts.separator ""
@@ -72,21 +86,21 @@ begin
   ARGV.each do |arg|
     case arg
 #      when /\.xml$/
-#      if $cml_options[:filename].nil?
-#        $cml_options[:filename] = arg
+#      if $options[:filename].nil?
+#        $options[:filename] = arg
 #      else
 #        raise ArgumentError, "More than one .xml file given at commandline."
 #      end
 
-      when /\.csv$/
-      if $cml_options[:protocol].nil?
-        $cml_options[:filename] = arg
-        $cml_options[:protocol] = File.basename(arg, ".csv")
+      when /(.+)\.csv$/
+      if $options[:protocol].nil?
+        $options[:filename] = arg
+        $options[:protocol] = File.basename(arg, ".csv")
       else
         raise ArgumentError, "More than one .csv file given at commandline."
       end
       else 
-        raise ArgumentError, "Invalid FileType. Only .csv or .xml files accepted."
+        raise ArgumentError, "Invalid FileType. Only .csv files accepted."
     end
   end
 rescue => e
@@ -97,10 +111,10 @@ end
 # filename = $options[:filename] || "inputfile.xml" 
 # If no filename given, default is inputfile.xml
 
-$cml_options[:filename] ||= "inputfile.xml"
+#$options[:filename] ||= "inputfile.xml"
 
-unless File.exist? $cml_options[:filename]
-  raise ArgumentError, "File #{$cml_options[:filename]} doesn't exist."
+unless File.exist? $options[:filename]
+  raise ArgumentError, "File #{$options[:filename]} doesn't exist."
 end
 
 =begin
@@ -155,8 +169,9 @@ shift $((OPTIND-1))
 
 =end
 
+#RUBY_SCRIPT_OPTS = RO.join " "
 BIN_DIR=File.dirname(__FILE__)
-OUT_DIR=File.dirname($cml_options[:filename])
+OUT_DIR=File.dirname($options[:filename])
 
 =begin
 
@@ -198,8 +213,9 @@ fi
 =end
 
 CSV2XML = File.join "#{BIN_DIR}", "csv2xml.sh"
+TMP_XML = File.join "#{OUT_DIR}", "tmp.xml"
 
-system "#{CSV2XML} \'#{$cml_options[:filename]}\' > \'#{OUT_DIR}/tmp.xml\'"
+system "#{CSV2XML} \'#{$options[:filename]}\' > \'#{TMP_XML}\'"
 
 =begin
 # Now the ruby script should be called on tmp.xml
@@ -218,7 +234,20 @@ else
  echo
  exit 1;
 fi
+=end
 
+unless File.exist? TMP_XML
+  raise ArgumentError, "File #{TMP_XML} doesn't exist."
+end
+
+#XML2UPPAAL = File.join "#{BIN_DIR}", "xml2uppaal.rb"
+
+#system "ruby \'#{XML2UPPAAL}\' #{RUBY_SCRIPT_OPTS} \'#{TMP_XML}\' \'#{$options[:filename]}\' "
+
+protocol = Parser.parse(TMP_XML)
+Render.renderize(protocol)
+
+=begin
 # Start of verifyta part and trace generation
 OS=`uname`
 LINUX_VERIFYTA=/usr/local/bin/verifyta
@@ -424,3 +453,5 @@ echo "# together with the query" ${1%\.*}.q "and then simulate/verify."
 echo
 
 =end
+
+
