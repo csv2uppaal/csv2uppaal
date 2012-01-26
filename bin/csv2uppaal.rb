@@ -1,10 +1,99 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 # Takes as argument *.csv protocol description file (exported using save as from
 # OpenOffice using ; as delimiers and outputs *.xml and *.q files that can
 # be opened in UPPAAL; then it tries to call the command line verifyta
 # (UPPAAL engine) if possible and outputs a possible error trace in text format.
 # Make sure that this file and csv2xml.sh are executable via chmod +x filename
 
+require "optparse"
+
+CSV2UPPAAL_VERSION = '1.2'
+
+$cml_options = {}
+
+opts = OptionParser.new do |opts|
+  opts.banner = "csv2uppaal #{CSV2UPPAAL_VERSION} - csv to uppaal conversion tool\nUsage: csv2uppaal [options] [filename.csv]"
+  opts.version = CSV2UPPAAL_VERSION
+
+  opts.on("-o", 
+          "--[no-]optimize", 
+          "Sets multiple channels optimization on.") do |o|
+    $cml_options[:optimize] = o
+  end
+  
+  ms = [:Set, :Bag, :Fifo, :Stutt, :Lossy]
+  m_all = ms + ms.map{|m| m.to_s.upcase} + ms.map{|m| m.to_s.downcase}
+  opts.on("-m", "--medium MEDIUM", m_all,
+                "Sets medium type (set, bag, fifo, lossy, stutt)") do |m|
+    $cml_options[:medium] = m.to_s.upcase
+  end
+  
+  opts.on("-c", "--capacity VALUE", Integer, "Sets channel capacity") do |c|
+    $cml_options[:capacity] = c.to_i
+  end
+  
+  opts.on("-t", "--trace VALUE", ["0", "1"], "Trace: 0 for any trace, 1 for shortest trace") do |t|
+    $cml_options[:trace] = t.to_i
+  end
+  
+  opts.on("-i", "--ignore", "All messages treated as ordered (ignore unordered flag)") do 
+    $cml_options[:ignore] = true
+  end
+  
+  opts.on("-f", "--fairness", "Termination under fairness (all executions eventually terminate)" ) do 
+    $cml_options[:timed] = true
+  end
+  
+  opts.on("-x", "--min-delay VALUE", Integer, "Sets MIN_DELAY constant value") do |x|
+    $cml_options[:min_delay] = x.to_i
+  end
+
+  opts.on("-y", "--tire-out VALUE", Integer, "Sets TIRE_OUT constant value") do |t|
+    $cml_options[:tire_out] = t.to_i
+  end
+
+  opts.separator ""
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+  opts.on_tail("--version", "Show version") do
+    puts opts.version
+    exit
+  end
+  
+end
+
+opts.parse!
+begin 
+  ARGV.each do |arg|
+    case arg
+      when /\.xml$/
+      if $cml_options[:filename].nil?
+        $cml_options[:filename] = arg
+      else
+        raise ArgumentError, "More than one .xml file given at commandline."
+      end
+      
+      when /\.csv$/
+      if $cml_options[:protocol].nil?
+        $cml_options[:protocol] = File.basename(arg, ".csv")
+      else
+        raise ArgumentError, "More than one .csv file given at commandline."
+      end
+      else 
+        raise ArgumentError, "Invalid FileType"
+    end
+  end
+rescue => e
+  puts e.inspect
+  puts e.class
+  puts opts.help
+end
+# filename = $options[:filename] || "inputfile.xml" # If no filename given, default is inputfile.xml
+=begin
 THIS=$(basename $0)
 
 function usage() {
@@ -313,3 +402,4 @@ echo "# To do so, run UPPAAL and open the file" ${1%\.*}.xml
 echo "# together with the query" ${1%\.*}.q "and then simulate/verify."
 echo
 
+=end
