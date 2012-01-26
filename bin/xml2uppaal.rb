@@ -1,7 +1,17 @@
 #!/usr/bin/env ruby
 
-require 'su.rb'
-require 'optparse'
+libdir = File.join(File.dirname(__FILE__), '..', 'lib')
+
+$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include? libdir
+
+require "optparse"
+require 'rexml/document'
+require "helper"
+require "protocol_object"
+require "parser"
+require "render"
+
+include REXML
 
 $options = {}
 
