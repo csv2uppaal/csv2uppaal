@@ -275,6 +275,31 @@ if [ -z "$VERIFYTA" ]; then
   exit;
 fi
 
+=end
+
+LINUX_VERIFYTA="/usr/local/bin/verifyta"
+MAC_VERIFYTA="/Applications/verifyta"
+LOCAL_VERIFYTA="./verifyta"
+
+VERIFYTAS = [LINUX_VERIFYTA, MAC_VERIFYTA, LOCAL_VERIFYTA]
+
+VERIFYTA = VERIFYTAS.find {|f| File.executable?(f) }
+
+unless VERIFYTA
+  puts <<EOS
+
+Error: the script was not able to find the UPPAAL engine file verifyta in any of the following locations.
+#{VERIFYTAS.inspect}
+Check the README file in the tool distribution for info how to intall UPPAAL.
+   
+EOS
+
+raise RuntimeError, "Couldn't find verifyta."
+
+end
+
+=begin
+
 PROTOCOL="${1%\.*}"
 
 if ! $EXTENSIONS; then
