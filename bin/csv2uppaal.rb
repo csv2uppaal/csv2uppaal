@@ -71,15 +71,16 @@ opts.parse!
 begin 
   ARGV.each do |arg|
     case arg
-      when /\.xml$/
-      if $cml_options[:filename].nil?
-        $cml_options[:filename] = arg
-      else
-        raise ArgumentError, "More than one .xml file given at commandline."
-      end
-      
+#      when /\.xml$/
+#      if $cml_options[:filename].nil?
+#        $cml_options[:filename] = arg
+#      else
+#        raise ArgumentError, "More than one .xml file given at commandline."
+#      end
+
       when /\.csv$/
       if $cml_options[:protocol].nil?
+        $cml_options[:filename] = arg
         $cml_options[:protocol] = File.basename(arg, ".csv")
       else
         raise ArgumentError, "More than one .csv file given at commandline."
@@ -93,7 +94,15 @@ rescue => e
   puts opts.help
 end
 
-# filename = $options[:filename] || "inputfile.xml" # If no filename given, default is inputfile.xml
+# filename = $options[:filename] || "inputfile.xml" 
+# If no filename given, default is inputfile.xml
+
+$cml_options[:filename] ||= "inputfile.xml"
+
+unless File.exist? $cml_options[:filename]
+  raise ArgumentError, "File #{$cml_options[:filename]} doesn't exist."
+end
+
 =begin
 THIS=$(basename $0)
 
@@ -170,7 +179,12 @@ if [ ${1##*.} != "csv" ]; then
   usage;
   # exit;
 fi
+=end 
 
+
+
+
+=begin
 #Now we convert the csv file to xml file
 if [ -r "$1" ]; then
  "$BIN_DIR/csv2xml.sh" "$1" > "${OUT_DIR}/tmp.xml"
