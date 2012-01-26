@@ -153,8 +153,12 @@ fi
 
 shift $((OPTIND-1))
 
-BIN_DIR=$(dirname "$0")
-OUT_DIR=$(dirname "$1")
+=end
+
+BIN_DIR=File.dirname(__FILE__)
+OUT_DIR=File.dirname($cml_options[:filename])
+
+=begin
 
 # TODO: Check Mac GUI with the new tree layout
 
@@ -179,12 +183,7 @@ if [ ${1##*.} != "csv" ]; then
   usage;
   # exit;
 fi
-=end 
 
-
-
-
-=begin
 #Now we convert the csv file to xml file
 if [ -r "$1" ]; then
  "$BIN_DIR/csv2xml.sh" "$1" > "${OUT_DIR}/tmp.xml"
@@ -196,6 +195,13 @@ else
  #exit 1;
 fi
 
+=end
+
+CSV2XML = File.join "#{BIN_DIR}", "csv2xml.sh"
+
+system "#{CSV2XML} \'#{$cml_options[:filename]}\' > \'#{OUT_DIR}/tmp.xml\'"
+
+=begin
 # Now the ruby script should be called on tmp.xml
 if [ -r "${OUT_DIR}/tmp.xml" ]; then
  ruby "${BIN_DIR}/xml2uppaal.rb" $RUBY_SCRIPT_OPTS "${OUT_DIR}/tmp.xml" "$1";
