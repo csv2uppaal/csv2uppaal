@@ -54,16 +54,18 @@ fi
 
 shift $((OPTIND-1))
 
+BIN_DIR=$(dirname "$0")
 OUT_DIR=$(dirname "$1")
 
+# TODO: Check Mac GUI with the new tree layout
 
 # At the Mac GUI there'll be no ./csv2uppal because 
 # everything is packaged inside the same directory
-if [ -r $(dirname "$0")/csv2uppaal ]; then
-  DIR_NAME=$(dirname "$0")/csv2uppaal;
-else
-  DIR_NAME=$(dirname "$0");
-fi
+#if [ -r $(dirname "$0")/csv2uppaal ]; then
+#  DIR_NAME=$(dirname "$0")/csv2uppaal;
+#else
+#  DIR_NAME=$(dirname "$0");
+#fi
 
 
 if [ "$#" -le 0 ]; then
@@ -81,7 +83,7 @@ fi
 
 #Now we convert the csv file to xml file
 if [ -r "$1" ]; then
- "$DIR_NAME/csv2xml.sh" "$1" > "${OUT_DIR}/tmp.xml"
+ "$BIN_DIR/csv2xml.sh" "$1" > "${OUT_DIR}/tmp.xml"
 # echo "The intermediate output has been written to tmp.xml."
 else
  echo "The protocol description in .csv does not exist or cannot be read.";
@@ -92,7 +94,7 @@ fi
 
 # Now the ruby script should be called on tmp.xml
 if [ -r "${OUT_DIR}/tmp.xml" ]; then
- ruby  -I "${DIR_NAME}/" "${DIR_NAME}/xml2uppaal.rb" $RUBY_SCRIPT_OPTS "${OUT_DIR}/tmp.xml" "$1";
+ ruby "${BIN_DIR}/xml2uppaal.rb" $RUBY_SCRIPT_OPTS "${OUT_DIR}/tmp.xml" "$1";
  if [ $? -ne 0 ]; then
    echo "Error translating the intermediate file to uppaal format with the ruby script";
    exit 1;
