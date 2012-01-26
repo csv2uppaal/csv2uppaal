@@ -39,3 +39,13 @@ class ProtocolObject
   end
 
 end
+
+require "protocol_object/protocol"
+require "protocol_object/role"
+require "protocol_object/condition"
+require "protocol_object/action"
+require "protocol_object/message"
+require "protocol_object/state"
+require "protocol_object/init_state"
+require "protocol_object/rule"
+
