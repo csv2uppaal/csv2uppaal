@@ -25,6 +25,10 @@ CSV2UPPAAL_VERSION = '1.2'
 
 $options = {}
 
+# Some defaults
+$options[:trace] = "-t 0"
+
+
 opts = OptionParser.new do |opts|
   opts.banner = "csv2uppaal #{CSV2UPPAAL_VERSION} - csv to uppaal conversion tool\nUsage: csv2uppaal [options] [filename.csv]"
   opts.version = CSV2UPPAAL_VERSION
@@ -47,7 +51,7 @@ opts = OptionParser.new do |opts|
   end
   
   opts.on("-t", "--trace VALUE", ["0", "1"], Integer, "Trace: 0 for any trace, 1 for shortest trace") do |t|
-    $options[:trace] = t
+    $options[:trace] = "-t #{t}"
   end
   
   opts.on("-i", "--ignore", "All messages treated as ordered (ignore unordered flag)") do 
@@ -55,7 +59,7 @@ opts = OptionParser.new do |opts|
   end
   
   opts.on("-f", "--fairness", "Termination under fairness (all executions eventually terminate)" ) do 
-    $options[:timed] = true
+    $options[:timed] = $options[:fairness] = true
   end
   
   opts.on("-x", "--min-delay VALUE", Integer, "Sets MIN_DELAY constant value") do |x|
@@ -314,6 +318,17 @@ $VERIFYTA -Y -o 2 -t $TRACE_OPTION "${PROTOCOL}.xml" "${PROTOCOL}-overflow.q" 2>
    echo
    exit 1;
  fi
+=end
+
+if $options[:fairness]
+  vt_output = %x|#{VERIFYTA} -Y -o 2 #{$options[:trace]} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/tmp.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
+  puts vt_output
+end
+
+
+
+=begin
+
 
 echo
 echo "*** BOUNDEDNESS *** "
