@@ -76,8 +76,7 @@ STATES is followed by an empty cell and then a list of all states for
 
 IN is followed by a name of a message and stands for inbound event
 
-IN is followed by a name of a message and stands for outbound event
-
+OUT is followed by a name of a message and stands for outbound event
 
 IN* and OUT* has the same meaning as IN and OUT but moreover signal
              that the messages are unordered (for the use with abstractions)
