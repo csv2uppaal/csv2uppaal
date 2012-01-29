@@ -310,7 +310,7 @@ heredoc
         end
         
         puts
-        puts "bool guard_#{rule.name}() {"
+        puts "bool guard__#{rule.name}() {"
         print "  return "
         
         if rule.condition.nil? then 
@@ -323,7 +323,7 @@ heredoc
         puts ";\n}\n"
         
         puts
-        puts "void action_#{rule.name}() {"
+        puts "void action__#{rule.name}() {"
         str = action_strings(rule).join
         puts  (str ? str : ";")
         puts "}\n"
@@ -421,12 +421,12 @@ heredoc
           end
           puts "<transition>"
           puts "  <source ref=\"id_#{role}_INVARIANT\"/><target ref=\"id_#{role}_INVARIANT\"/>"
-          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard_#{rule.name}()"
+          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard__#{rule.name}()"
           if rule.retrans?
             print "&amp;&amp;x&lt;=TIRE_OUT&amp;&amp;y&gt;=MIN_DELAY"
           end
           print "</label>\n"
-          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action_#{rule.name}()"
+          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action__#{rule.name}()"
 
 #          this_role_rtx_assig = rtxclocks[role].map {|cl| "#{cl}=0" }.join(",")
           if rule.retrans?
@@ -446,9 +446,9 @@ heredoc
         else
           puts "<transition>"
           puts "  <source ref=\"#{id_start}\"/><target ref=\"#{id_start}\"/>"
-          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard_#{rule.name}()"
+          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard__#{rule.name}()"
           print "</label>\n"
-          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action_#{rule.name}()"
+          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action__#{rule.name}()"
           print "</label>\n"
           puts %Q[  <nail x="#{nail_1_x}" y="#{nail_1_y}"/><nail x="#{nail_2_x}" y="#{nail_2_y}"/>]
           puts "</transition>"
