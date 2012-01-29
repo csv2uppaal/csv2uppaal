@@ -335,23 +335,26 @@ puts "*** BOUNDEDNESS *** "
 line_no = 0
 File.foreach("#{OUT_DIR}/#{$options[:protocol]}-overflow.trc") do |line|
 
-  #     COORDINATOR.START->COORDINATOR.START { guard_Active_Cancel_c_OUTBOUND(), tau, action_Active_Cancel_c_OUTBOUND() }
+  #  PARTICIPANT.START->PARTICIPANT.START { guard__Active__CannotComplete_p__OUTBOUND(), tau, action__Active__CannotComplete_p__OUTBOUND() }
+  #  PARTICIPANT._id_PARTICIPANT_INVARIANT->PARTICIPANT._id_PARTICIPANT_INVARIANT { guard_FailingActive_Fail_p_OUTBOUND() && x <= TIRE_OUT && y >= MIN_DELAY, tau, action_FailingActive_Fail_p_OUTBOUND(), y := 0 
+  #  COORDINATOR.START->COORDINATOR.START { guard__Completing__Exit_p__INBOUND(), tau, action__Completing__Exit_p__INBOUND() }
 
-  regexp = /\s*([[:alnum:]]*)\.(\w*)->[[:alnum:]]*\.(\w*).*guard_([[:alnum:]]*)_([[:alnum:]]*)_\w_([[:alnum:]]*)/
+
+  regexp = /^\s*(\w+?)\.(\w*)->\w*\.(\w*).*guard__(\w*)__(\w*)__(OUTBOUND|INBOUND)/
 
 #  p line
 #  puts "***"
   match_data = line.match regexp
   if match_data
      line_no += 1
+     all_match_string,
      coordinator,
-
      label1,
      label2,
      state,
      action,
-     outin = match_data.to_a
-     puts "#{line_no}. #{coordinator} in state #{state} performs #{outin.downcase} action #{action}"
+     out_or_in = match_data.to_a
+     puts "#{line_no}. #{coordinator} in state [#{state}] performs #{out_or_in.downcase} action [#{action}]"
   end
 
 end
