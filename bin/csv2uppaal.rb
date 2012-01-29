@@ -348,13 +348,13 @@ File.foreach("#{OUT_DIR}/#{$options[:protocol]}-overflow.trc") do |line|
   if match_data
      line_no += 1
      all_match_string,
-     coordinator,
+     role_name,
      label1,
      label2,
      state,
      action,
      out_or_in = match_data.to_a
-     puts "#{line_no}. #{coordinator} in state [#{state}] performs #{out_or_in.downcase} action [#{action}]"
+     puts "#{line_no}. #{role_name} in state [#{state}] performs #{out_or_in.downcase} action [#{action}]"
   end
 
 end
