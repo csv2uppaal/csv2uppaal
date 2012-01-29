@@ -70,7 +70,12 @@ opts = OptionParser.new do |opts|
     $options[:tire_out] = y
   end
 
+
   opts.separator ""
+
+  opts.on("-d", "--debug", "For debug puposes don't remove temporary files") do |d|
+    $options[:debug] = true
+  end
 
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -321,11 +326,37 @@ $VERIFYTA -Y -o 2 -t $TRACE_OPTION "${PROTOCOL}.xml" "${PROTOCOL}-overflow.q" 2>
 =end
 
 if $options[:fairness]
-  vt_output = %x|#{VERIFYTA} -Y -o 2 #{$options[:trace]} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/tmp.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
-  puts vt_output
+  %x|#{VERIFYTA} -Y -o 2 #{$options[:trace]} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/#{$options[:protocol]}-overflow.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
 end
 
+puts
+puts "*** BOUNDEDNESS *** "
 
+line_no = 0
+File.foreach("#{OUT_DIR}/#{$options[:protocol]}-overflow.trc") do |line|
+
+  #     COORDINATOR.START->COORDINATOR.START { guard_Active_Cancel_c_OUTBOUND(), tau, action_Active_Cancel_c_OUTBOUND() }
+
+  regexp = /\s*([[:alnum:]]*)\.(\w*)->[[:alnum:]]*\.(\w*).*guard_([[:alnum:]]*)_([[:alnum:]]*)_\w_([[:alnum:]]*)/
+
+#  p line
+#  puts "***"
+  match_data = line.match regexp
+  if match_data
+     line_no += 1
+     coordinator,
+
+     label1,
+     label2,
+     state,
+     action,
+     outin = match_data.to_a
+     puts "#{line_no}. #{coordinator} in state #{state} performs #{outin.downcase} action #{action}"
+  end
+
+end
+       
+    
 
 =begin
 
