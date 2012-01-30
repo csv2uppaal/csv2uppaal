@@ -9,8 +9,9 @@ class Render
   def self.renderize(protocol)
     @protocol = protocol
 	
-    dir_path = File.dirname($options[:filename]) # TODO: Check OUT_DIR - the same
-    protocol_name = $options[:protocol]
+    dir_path = File.dirname(Opt.filename) # TODO: Check OUT_DIR - the same
+    # TODO protocol.name is different of protocol_name (change this).
+    protocol_name = Opt.protocol
 
     # This 'batch' opening cause a very dificult to track bug. 
     # The files remainded open even after they were not needed anymore
@@ -45,7 +46,7 @@ class Render
       STDERR.puts "  Communication: unknown, using SET (asynchronous unreliable medium with reordering)"
     end
     
-    STDERR.puts "       Channels: #{$options[:optimize] ? "multiple" : "single"}"
+    STDERR.puts "       Channels: #{Opt.optimize? ? "multiple" : "single"}"
     STDERR.puts "Buffer capacity: #{@protocol.medium_capacity}"
     STDERR.puts "     Role names: #{@protocol.roles.join(", ")}"
     STDERR.puts "       Messages: #{@protocol.messages.sort.join(", ")}"
@@ -116,7 +117,7 @@ heredoc
     puts "\n\n"
     
     puts "int buffer_channel(Msgs s) {"
-    if $options[:optimize]
+    if Opt.optimize?
       @protocol.messages.each do |m|
         print "  if (s == #{m}) return #{@protocol.roles_str_of_msg(m)};"
         puts (m.unordered? ? "  // Unordered Message" : " ")
@@ -161,8 +162,8 @@ Msgs msg_FIFO[Channels][Buffer];
 // smaller or equal than TIRE_OUT
 // For boundedness and correctness checks, the constants should be both set to 0
 
-const int MIN_DELAY = #{$options[:min_delay] || 1};
-const int TIRE_OUT = #{$options[:tire_out] || 3};
+const int MIN_DELAY = #{Opt.min_delay || 1};
+const int TIRE_OUT = #{Opt.tire_out || 3};
 
 void Send_Msg(Msgs s) {
 int i;
@@ -290,7 +291,7 @@ heredoc
       puts "<template>"
       puts "<name>#{role.name}</name>"
       puts "<declaration>"
-      if $options[:timed]
+      if Opt.timed?
 #        rtxcstr = rtxclocks[role].join(",\n    ")
 #        puts "  clock #{rtxcstr},\n    y;"
          puts "clock x, y;"
@@ -299,7 +300,7 @@ heredoc
       role.rules.each_with_index do |rule, ix| 
         rule_number = ix+1  # legacy code, now the name of the guard/action is different
         
-        if $options[:timed]
+        if Opt.timed?
           if rule.retrans?
             puts ""
             puts "// Retransmission Transition "
@@ -353,7 +354,7 @@ heredoc
       
 #      invalid_x = (-radius-300)
 #      invalid_y = 0
-      if $options[:timed]
+      if Opt.timed?
 
 #        artxcond = rtxclocks[role].map {|cl| "#{cl}&lt;=TIRE_OUT+1" }.join("&amp;&amp;")
         
@@ -410,7 +411,7 @@ heredoc
         nail_2_x = (Math.cos(nail_2)*radius).floor
         nail_2_y = (Math.sin(nail_2)*radius).floor
     
-        if $options[:timed]
+        if Opt.timed?
 #          otherrtxcond = (allrtxclocks-["x_#{rule}"]).map {|cl| "#{cl}&lt;=TIRE_OUT+1" }.join("&amp;&amp;")
 #          otherrtxcond += "y&gt;=MIN_DELAY"
 
@@ -472,7 +473,7 @@ heredoc
     render query_overflow, :output => query_file_overflow
     render query_invalid,  :output => query_file_invalid
     render query_deadlock, :output => query_file_deadlock
-    if $options[:timed]
+    if Opt.timed?
       render query_ended_timed, :output => query_file_ended
       render query_overflow+query_ended_timed, :output => query_file
     else  

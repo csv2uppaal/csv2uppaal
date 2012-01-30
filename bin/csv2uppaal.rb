@@ -6,13 +6,13 @@
 # Make sure that this file and csv2xml.sh are executable via chmod +x filename
 
 require "optparse"
+require 'rexml/document'
 
 libdir = File.join(File.dirname(__FILE__), '..', 'lib')
 
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include? libdir
 
-require "optparse"
-require 'rexml/document'
+require "c2u_optparse"
 require "helper"
 require "protocol_object"
 require "parser"
@@ -20,211 +20,15 @@ require "render"
 
 include REXML
 
-
-CSV2UPPAAL_VERSION = '1.2'
-
-$options = {}
-
-# Some defaults
-$options[:trace] = "-t 0"
-
-
-opts = OptionParser.new do |opts|
-  opts.banner = "csv2uppaal #{CSV2UPPAAL_VERSION} - csv to uppaal conversion tool\nUsage: csv2uppaal [options] [filename.csv]"
-  opts.version = CSV2UPPAAL_VERSION
-
-  opts.on("-o", 
-          "--[no-]optimize", 
-          "Sets multiple channels optimization on.") do |o|
-    $options[:optimize] = o
-  end
-  
-  ms = [:Set, :Bag, :Fifo, :Stutt, :Lossy]
-  m_all = ms + ms.map{|m| m.to_s.upcase} + ms.map{|m| m.to_s.downcase}
-  opts.on("-m", "--medium MEDIUM", m_all,
-                "Sets medium type (set, bag, fifo, lossy, stutt)") do |m|
-    $options[:medium] = m.to_s.upcase
-  end
-  
-  opts.on("-c", "--capacity VALUE", Integer, "Sets channel capacity") do |c|
-    $options[:capacity] = c
-  end
-  
-  opts.on("-t", "--trace VALUE", ["0", "1"], Integer, "Trace: 0 for any trace, 1 for shortest trace") do |t|
-    $options[:trace] = "-t #{t}"
-  end
-  
-  opts.on("-i", "--ignore", "All messages treated as ordered (ignore unordered flag)") do 
-    $options[:ignore] = true
-  end
-  
-  opts.on("-f", "--fairness", "Termination under fairness (all executions eventually terminate)" ) do 
-    $options[:timed] = $options[:fairness] = true
-  end
-  
-  opts.on("-x", "--min-delay VALUE", Integer, "Sets MIN_DELAY constant value") do |x|
-    $options[:min_delay] = x
-  end
-
-  opts.on("-y", "--tire-out VALUE", Integer, "Sets TIRE_OUT constant value") do |y|
-    $options[:tire_out] = y
-  end
-
-
-  opts.separator ""
-
-  opts.on("-d", "--debug", "For debug puposes don't remove temporary files") do |d|
-    $options[:debug] = true
-  end
-
-  opts.on_tail("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
-
-  opts.on_tail("--version", "Show version") do
-    puts opts.version
-    exit
-  end
-  
-end
-
-opts.parse!
-
-begin 
-  ARGV.each do |arg|
-    case arg
-#      when /\.xml$/
-#      if $options[:filename].nil?
-#        $options[:filename] = arg
-#      else
-#        raise ArgumentError, "More than one .xml file given at commandline."
-#      end
-
-      when /(.+)\.csv$/
-      if $options[:protocol].nil?
-        $options[:filename] = arg
-        $options[:protocol] = File.basename(arg, ".csv")
-      else
-        raise ArgumentError, "More than one .csv file given at commandline."
-      end
-      else 
-        raise ArgumentError, "Invalid FileType. Only .csv files accepted."
-    end
-  end
-rescue => e
-  puts "Error: #{e.message} [#{e.class}]"
-  puts opts.help
-end
-
-# filename = $options[:filename] || "inputfile.xml" 
-# If no filename given, default is inputfile.xml
-
-#$options[:filename] ||= "inputfile.xml"
-
-unless File.exist? $options[:filename]
-  raise ArgumentError, "File #{$options[:filename]} doesn't exist."
-end
-
-=begin
-THIS=$(basename $0)
-
-function usage() {
-  echo -e "  $THIS 1.1"
-  echo "  Usage: $THIS <filename.csv>
-         $THIS -o <filename.csv> (multiple channel optimization)
-         $THIS -t 0 <filename.csv> (default, finds some error trace)
-         $THIS -t 1 <filename.csv> (finds the shortest error trace)
-         $THIS -m [set|bag|fifo|lossy|stutt] <filename.csv> (sets the medium)
-         $THIS -c capacity <filename.csv> (sets the channel capacity)
-         $THIS -i all messages treated as ordered (ignore unordered flag)
-         $THIS -f termination under fairness (all executions eventually terminate) 
-         $THIS -x <value> sets MIN_DELAY constant
-         $THIS -y <value> sets TIRE_OUT constant
-         $THIS -h (shows this help)
-    "
-  exit -1
-}
-
-# Define all defaults
-RUBY_SCRIPT_OPTS=""
-TRACE_OPTION="0"
-DEBUG=false
-EXTENSIONS=false
-
-while getopts "ot:m:c:hidfx:y:" OPT; do
-  case $OPT in
-  "o") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -o";;
-  "m") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -m ${OPTARG}";;
-  "t") TRACE_OPTION=$OPTARG;;
-  "h") usage;;
-  "c") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -c ${OPTARG}";;
-  "i") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -i";;
-  "d") DEBUG=true;;
-  "f") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -f";EXTENSIONS=true;;
-  "x") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -x ${OPTARG}";;
-  "y") RUBY_SCRIPT_OPTS="${RUBY_SCRIPT_OPTS} -y ${OPTARG}";;
-  "?") exit -2;;
-  esac
-done
-
-if [ $TRACE_OPTION != "0" -a $TRACE_OPTION != "1" ]; then
-  echo "Trace option can be only 0 (any trace) or 1 (shortest trace).";
-  echo 
-  usage;
-fi 
-
-shift $((OPTIND-1))
-
-=end
-
-#RUBY_SCRIPT_OPTS = RO.join " "
 BIN_DIR=File.dirname(__FILE__)
-OUT_DIR=File.dirname($options[:filename])
-
-=begin
+OUT_DIR=File.dirname(Opt.filename)
 
 # TODO: Check Mac GUI with the new tree layout
-
-# At the Mac GUI there'll be no ./csv2uppal because 
-# everything is packaged inside the same directory
-#if [ -r $(dirname "$0")/csv2uppaal ]; then
-#  DIR_NAME=$(dirname "$0")/csv2uppaal;
-#else
-#  DIR_NAME=$(dirname "$0");
-#fi
-
-
-if [ "$#" -le 0 ]; then
-  echo "Provide as an argument a protocol description (a .csv file).";
-  usage;
-  # exit;
-fi
-  
-
-if [ ${1##*.} != "csv" ]; then
-  echo "The file in the argument must be a .csv file.";
-  usage;
-  # exit;
-fi
-
-#Now we convert the csv file to xml file
-if [ -r "$1" ]; then
- "$BIN_DIR/csv2xml.sh" "$1" > "${OUT_DIR}/tmp.xml"
-# echo "The intermediate output has been written to tmp.xml."
-else
- echo "The protocol description in .csv does not exist or cannot be read.";
- echo
- usage;
- #exit 1;
-fi
-
-=end
 
 CSV2XML = File.join "#{BIN_DIR}", "csv2xml.sh"
 TMP_XML = File.join "#{OUT_DIR}", "tmp.xml"
 
-system "#{CSV2XML} \'#{$options[:filename]}\' > \'#{TMP_XML}\'"
+system "#{CSV2XML} \'#{Opt.filename}\' > \'#{TMP_XML}\'"
 
 =begin
 # Now the ruby script should be called on tmp.xml
@@ -325,8 +129,10 @@ $VERIFYTA -Y -o 2 -t $TRACE_OPTION "${PROTOCOL}.xml" "${PROTOCOL}-overflow.q" 2>
  fi
 =end
 
-if $options[:fairness]
-  %x|#{VERIFYTA} -Y -o 2 #{$options[:trace]} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/#{$options[:protocol]}-overflow.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
+raise "End here - TESTING CODE"
+
+if Opt.fairness?
+  %x|#{VERIFYTA} -Y -o 2 #{Opt.trace} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/#{$options[:protocol]}-overflow.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
 end
 
 puts
