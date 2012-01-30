@@ -17,6 +17,7 @@ require "helper"
 require "protocol_object"
 require "parser"
 require "render"
+require "verifier"
 
 include REXML
 
@@ -128,6 +129,13 @@ $VERIFYTA -Y -o 2 -t $TRACE_OPTION "${PROTOCOL}.xml" "${PROTOCOL}-overflow.q" 2>
    exit 1;
  fi
 =end
+
+
+
+puts Verifier.new(:overflow).verify 
+
+
+
 
 raise "End here - TESTING CODE"
 
