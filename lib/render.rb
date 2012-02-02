@@ -28,7 +28,7 @@ class Render
     # Protocol analysis and statistics printed out 
     STDERR.puts " " 
     STDERR.puts "********************" 
-    STDERR.puts "Tool csv2uppaal v1.1" 
+    STDERR.puts "Tool csv2uppaal v2.0" 
     STDERR.puts "********************" 
     STDERR.puts "  Protocol name: #{@protocol}" 
     
