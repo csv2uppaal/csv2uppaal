@@ -1,0 +1,12 @@
+*** DEADLOCK-FREENESS ***
+-------------------
+<%= @trace %>
+% if @matches.empty?
+There was no deadlock found in the protocol.
+Note that if there is a buffer overflow, then there are
+no deadlocks only up to the given buffer capacity.
+% else
+---
+The above trace leads to a deadlock.
+% end
+

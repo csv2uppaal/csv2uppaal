@@ -1,0 +1,10 @@
+*** BOUNDEDNESS (under fairness) ***
+-------------------
+<%= @trace %>
+% if @matches.empty?
+There is no buffer overflow, the protocol is bounded.
+% else
+---
+The trace above shows that for the given capacity there is an overflow.
+% end
+

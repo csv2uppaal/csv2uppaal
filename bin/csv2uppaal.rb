@@ -130,16 +130,21 @@ $VERIFYTA -Y -o 2 -t $TRACE_OPTION "${PROTOCOL}.xml" "${PROTOCOL}-overflow.q" 2>
  fi
 =end
 
+constraints = 
+  Opt.fairness? ? 
+    [:boundedness_under_fairness, :termination_under_fairness] :
+    [:boundedness, :correctness, :termination, :deadlock_freeness]
 
+constraints.each do |constraint|
+  puts Verifier.new(constraint).verify 
+end
 
-puts Verifier.new(:overflow).verify 
+puts Verifier.footer
 
+=begin
+else 
+constraints = 
 
-
-
-raise "End here - TESTING CODE"
-
-if Opt.fairness?
   %x|#{VERIFYTA} -Y -o 2 #{Opt.trace} "#{OUT_DIR+"/"+$options[:protocol]}.xml" "#{OUT_DIR+"/"+$options[:protocol]}-overflow.q" 2> "#{OUT_DIR}/#{$options[:protocol]}-overflow.trc" > "#{OUT_DIR}/tmp_stdout.trc"|
 end
 
@@ -172,7 +177,8 @@ File.foreach("#{OUT_DIR}/#{$options[:protocol]}-overflow.trc") do |line|
   end
 
 end
-       
+   
+=end 
     
 
 =begin

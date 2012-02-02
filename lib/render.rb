@@ -16,12 +16,14 @@ class Render
     # This 'batch' opening cause a very dificult to track bug. 
     # The files remainded open even after they were not needed anymore
 
-    uppaal_file          = File.open("#{dir_path}/#{protocol_name}.xml", "w")
-    query_file           = "#{dir_path}/#{protocol_name}.q"
-    query_file_overflow  = "#{dir_path}/#{protocol_name}-overflow.q"
-    query_file_invalid   = "#{dir_path}/#{protocol_name}-invalid.q"
-    query_file_deadlock  = "#{dir_path}/#{protocol_name}-deadlock.q"
-    query_file_ended     = "#{dir_path}/#{protocol_name}-ended.q"
+    uppaal_file               = File.open("#{dir_path}/#{protocol_name}.xml", "w")
+    query_file                = "#{dir_path}/#{protocol_name}.q"
+    query_file_overflow       = "#{dir_path}/#{protocol_name}-boundedness.q"
+    query_file_invalid        = "#{dir_path}/#{protocol_name}-correctness.q"
+    query_file_deadlock       = "#{dir_path}/#{protocol_name}-deadlock_freeness.q"
+    query_file_ended          = "#{dir_path}/#{protocol_name}-termination.q"
+    query_file_overflow_timed = "#{dir_path}/#{protocol_name}-boundedness_under_fairness.q"
+    query_file_ended_timed    = "#{dir_path}/#{protocol_name}-termination_under_fairness.q"
     
     # Protocol analysis and statistics printed out 
     STDERR.puts " " 
@@ -60,7 +62,7 @@ class Render
     
     # From now on, all 'puts' (and the othes) will go to the output file (uppaal_file) 
     $stdout = uppaal_file
-    STDERR.puts "# Writing: #{File.basename(uppaal_file.path)}"
+    STDERR.puts "# Writing: #{File.basename(uppaal_file.path)}\n\n"
     puts SUHelperMethods::UPPAAL_XML_HEADER
     
     # "Protocol" has a to_s defined in ProtocolObject
@@ -470,13 +472,16 @@ heredoc
     # QUERY_FILES #
     ###############
     
-    render query_overflow, :output => query_file_overflow
-    render query_invalid,  :output => query_file_invalid
-    render query_deadlock, :output => query_file_deadlock
+    query_overflow_timed = query_overflow    
+
     if Opt.timed?
-      render query_ended_timed, :output => query_file_ended
-      render query_overflow+query_ended_timed, :output => query_file
-    else  
+      render query_overflow_timed, :output => query_file_overflow_timed
+      render query_ended_timed,    :output => query_file_ended_timed
+      render query_overflow_timed+query_ended_timed, :output => query_file
+    else
+      render query_invalid,  :output => query_file_invalid
+      render query_deadlock, :output => query_file_deadlock
+      render query_overflow, :output => query_file_overflow
       render query_ended,    :output => query_file_ended
       render query_overflow+query_invalid+query_deadlock+query_ended, :output => query_file
     end

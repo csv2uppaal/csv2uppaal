@@ -1,0 +1,13 @@
+*** TERMINATION (under fairness) ***
+-------------------
+<%= @trace %>
+% if @matches.empty?
+The roles will eventually reach their Ended states.
+Note that if there is a buffer overflow you may"
+want to increase the capacity of the medium and try again.
+% else
+---
+The above trace shows a loop or it ends in a deadlock
+such that the roles do not reach their ended states.
+% end
+

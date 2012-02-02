@@ -44,5 +44,12 @@ class Verifier
     @trace = ERB.new(File.read(@trace_erb), nil, '%<>').result(binding)
     @verify_log = ERB.new(File.read(@constraint_erb), nil, '%<>').result(binding)
   end
+
+  def self.footer
+    protocol_path = File.join OUT_DIR, Opt.protocol
+    footer_file = File.join "..", "view", "footer.erb"
+    ERB.new(File.read(footer_file), nil, '%<>').result(binding)
+  end
+
 end
 

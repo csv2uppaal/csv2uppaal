@@ -1,0 +1,12 @@
+*** TERMINATION ***
+-------------------
+<%= @trace %>
+% if @matches.empty?
+The roles cannot enter their Ended states within the given medium capacity.
+Note that if there is a buffer overflow you may
+want to increase the capacity of the medium and try again.
+% else
+---
+The above trace shows how the roles can reach their ended states.
+% end
+
