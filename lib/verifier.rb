@@ -1,5 +1,7 @@
 require 'erb'
 
+class VerifytaError<StandardError; end
+
 class Verifier
 
   def initialize(constraint)
@@ -14,7 +16,10 @@ class Verifier
   def verify(protocol_name=Opt.protocol, constraint=@constraint)
     path = File.join OUT_DIR, protocol_name
     path_constraint = "#{path}-#{constraint}"
+
     %x|#{VERIFYTA} -Y -o 2 #{Opt.trace} "#{path}.xml" "#{path_constraint}.q" 2> "#{path_constraint}.trc" > "#{path_constraint}.stdout"|
+    raise VerifytaError, "Verifyta halted with the following message:\n---\n#{File.read(path_constraint+".trc")}\n" unless $?.success?
+    
     File.foreach("#{path_constraint}.trc") do |line|
 
       #  Trace examples:
