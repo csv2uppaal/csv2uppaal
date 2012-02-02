@@ -6,7 +6,7 @@ class Message < ProtocolObject
   def initialize(args, text, parent)
     @name = text.upcase.to_sym
     @@messages |= [@name]
-    if args["type"] == "unordered" and !$options[:ignore] 
+    if args["type"] == "unordered" and !Opt.ignore?
       @@messages_types[@name] = :unordered
     end
     super

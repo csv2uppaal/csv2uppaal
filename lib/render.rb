@@ -9,15 +9,21 @@ class Render
   def self.renderize(protocol)
     @protocol = protocol
 	
-    dir_path = $options[:filename].nil? ? "./" : File.dirname($options[:filename])
-    base_name = $options[:protocol].nil? ? "final" : File.basename($options[:protocol], ".csv") 
+    dir_path = File.dirname(Opt.filename) # TODO: Check OUT_DIR - the same
+    # TODO protocol.name is different of protocol_name (change this).
+    protocol_name = Opt.protocol
 
-    uppaal_file          = File.open("#{dir_path}/#{base_name}.xml", "w")
-    query_file           = File.open("#{dir_path}/#{base_name}.q"  , "w")
-    query_file_overflow  = File.open("#{dir_path}/#{base_name}-overflow.q"  , "w")
-    query_file_invalid   = File.open("#{dir_path}/#{base_name}-invalid.q"  , "w")
-    query_file_deadlock  = File.open("#{dir_path}/#{base_name}-deadlock.q"  , "w")
-    query_file_ended     = File.open("#{dir_path}/#{base_name}-ended.q"  , "w")
+    # This 'batch' opening cause a very dificult to track bug. 
+    # The files remainded open even after they were not needed anymore
+
+    uppaal_file               = File.open("#{dir_path}/#{protocol_name}.xml", "w")
+    query_file                = "#{dir_path}/#{protocol_name}.q"
+    query_file_overflow       = "#{dir_path}/#{protocol_name}-boundedness.q"
+    query_file_invalid        = "#{dir_path}/#{protocol_name}-correctness.q"
+    query_file_deadlock       = "#{dir_path}/#{protocol_name}-deadlock_freeness.q"
+    query_file_ended          = "#{dir_path}/#{protocol_name}-termination.q"
+    query_file_overflow_timed = "#{dir_path}/#{protocol_name}-boundedness_under_fairness.q"
+    query_file_ended_timed    = "#{dir_path}/#{protocol_name}-termination_under_fairness.q"
     
     # Protocol analysis and statistics printed out 
     STDERR.puts " " 
@@ -42,7 +48,7 @@ class Render
       STDERR.puts "  Communication: unknown, using SET (asynchronous unreliable medium with reordering)"
     end
     
-    STDERR.puts "       Channels: #{$options[:optimize] ? "multiple" : "single"}"
+    STDERR.puts "       Channels: #{Opt.optimize? ? "multiple" : "single"}"
     STDERR.puts "Buffer capacity: #{@protocol.medium_capacity}"
     STDERR.puts "     Role names: #{@protocol.roles.join(", ")}"
     STDERR.puts "       Messages: #{@protocol.messages.sort.join(", ")}"
@@ -56,7 +62,7 @@ class Render
     
     # From now on, all 'puts' (and the othes) will go to the output file (uppaal_file) 
     $stdout = uppaal_file
-    STDERR.puts "# Writing: #{File.basename(uppaal_file.path)}"
+    STDERR.puts "# Writing: #{File.basename(uppaal_file.path)}\n\n"
     puts SUHelperMethods::UPPAAL_XML_HEADER
     
     # "Protocol" has a to_s defined in ProtocolObject
@@ -113,7 +119,7 @@ heredoc
     puts "\n\n"
     
     puts "int buffer_channel(Msgs s) {"
-    if $options[:optimize]
+    if Opt.optimize?
       @protocol.messages.each do |m|
         print "  if (s == #{m}) return #{@protocol.roles_str_of_msg(m)};"
         puts (m.unordered? ? "  // Unordered Message" : " ")
@@ -158,8 +164,8 @@ Msgs msg_FIFO[Channels][Buffer];
 // smaller or equal than TIRE_OUT
 // For boundedness and correctness checks, the constants should be both set to 0
 
-const int MIN_DELAY = #{$options[:min_delay] || 1};
-const int TIRE_OUT = #{$options[:tire_out] || 3};
+const int MIN_DELAY = #{Opt.min_delay || 1};
+const int TIRE_OUT = #{Opt.tire_out || 3};
 
 void Send_Msg(Msgs s) {
 int i;
@@ -287,7 +293,7 @@ heredoc
       puts "<template>"
       puts "<name>#{role.name}</name>"
       puts "<declaration>"
-      if $options[:timed]
+      if Opt.timed?
 #        rtxcstr = rtxclocks[role].join(",\n    ")
 #        puts "  clock #{rtxcstr},\n    y;"
          puts "clock x, y;"
@@ -296,7 +302,7 @@ heredoc
       role.rules.each_with_index do |rule, ix| 
         rule_number = ix+1  # legacy code, now the name of the guard/action is different
         
-        if $options[:timed]
+        if Opt.timed?
           if rule.retrans?
             puts ""
             puts "// Retransmission Transition "
@@ -307,7 +313,7 @@ heredoc
         end
         
         puts
-        puts "bool guard_#{rule.name}() {"
+        puts "bool guard__#{rule.name}() {"
         print "  return "
         
         if rule.condition.nil? then 
@@ -320,7 +326,7 @@ heredoc
         puts ";\n}\n"
         
         puts
-        puts "void action_#{rule.name}() {"
+        puts "void action__#{rule.name}() {"
         str = action_strings(rule).join
         puts  (str ? str : ";")
         puts "}\n"
@@ -350,7 +356,7 @@ heredoc
       
 #      invalid_x = (-radius-300)
 #      invalid_y = 0
-      if $options[:timed]
+      if Opt.timed?
 
 #        artxcond = rtxclocks[role].map {|cl| "#{cl}&lt;=TIRE_OUT+1" }.join("&amp;&amp;")
         
@@ -407,7 +413,7 @@ heredoc
         nail_2_x = (Math.cos(nail_2)*radius).floor
         nail_2_y = (Math.sin(nail_2)*radius).floor
     
-        if $options[:timed]
+        if Opt.timed?
 #          otherrtxcond = (allrtxclocks-["x_#{rule}"]).map {|cl| "#{cl}&lt;=TIRE_OUT+1" }.join("&amp;&amp;")
 #          otherrtxcond += "y&gt;=MIN_DELAY"
 
@@ -418,12 +424,12 @@ heredoc
           end
           puts "<transition>"
           puts "  <source ref=\"id_#{role}_INVARIANT\"/><target ref=\"id_#{role}_INVARIANT\"/>"
-          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard_#{rule.name}()"
+          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard__#{rule.name}()"
           if rule.retrans?
             print "&amp;&amp;x&lt;=TIRE_OUT&amp;&amp;y&gt;=MIN_DELAY"
           end
           print "</label>\n"
-          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action_#{rule.name}()"
+          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action__#{rule.name}()"
 
 #          this_role_rtx_assig = rtxclocks[role].map {|cl| "#{cl}=0" }.join(",")
           if rule.retrans?
@@ -443,9 +449,9 @@ heredoc
         else
           puts "<transition>"
           puts "  <source ref=\"#{id_start}\"/><target ref=\"#{id_start}\"/>"
-          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard_#{rule.name}()"
+          print "  <label kind=\"guard\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor+8}\">guard__#{rule.name}()"
           print "</label>\n"
-          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action_#{rule.name}()"
+          print "  <label kind=\"assignment\" x=\"#{(nail_center_x*label_radius).floor-50}\" y=\"#{(nail_center_y*label_radius).floor-8}\">action__#{rule.name}()"
           print "</label>\n"
           puts %Q[  <nail x="#{nail_1_x}" y="#{nail_1_y}"/><nail x="#{nail_2_x}" y="#{nail_2_y}"/>]
           puts "</transition>"
@@ -466,17 +472,24 @@ heredoc
     # QUERY_FILES #
     ###############
     
-    render query_overflow, :output => query_file_overflow
-    render query_invalid,  :output => query_file_invalid
-    render query_deadlock, :output => query_file_deadlock
-    if $options[:timed]
-      render query_ended_timed, :output => query_file_ended
-      render query_overflow+query_ended_timed, :output => query_file
-    else  
+    query_overflow_timed = query_overflow    
+
+    if Opt.timed?
+      render query_overflow_timed, :output => query_file_overflow_timed
+      render query_ended_timed,    :output => query_file_ended_timed
+      render query_overflow_timed+query_ended_timed, :output => query_file
+    else
+      render query_invalid,  :output => query_file_invalid
+      render query_deadlock, :output => query_file_deadlock
+      render query_overflow, :output => query_file_overflow
       render query_ended,    :output => query_file_ended
       render query_overflow+query_invalid+query_deadlock+query_ended, :output => query_file
     end
-    
+
+    ensure
+      #TODO: A better handling (not messing with) of STDOUT
+      uppaal_file.close
+      $stdout = STDOUT
   end
   
   private
@@ -513,11 +526,11 @@ heredoc
   
   private
   
-  def self.render(str, options={:output=>STDOUT})
-    $stdout = options[:output]
-    puts "// This file was generated by csv2uppaal\n\n"
-    puts str
-    $stdout = STDOUT
+  def self.render(str, options)
+    File.open(options[:output], 'w') do |f|
+      f.puts "// This file was generated by csv2uppaal\n\n"
+      f.puts str
+    end
   end
   
   ##################

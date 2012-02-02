@@ -155,12 +155,16 @@ echo
 echo "*** BOUNDEDNESS *** "
 awk -F ";" 'BEGIN {i=0; print "-------------------"}   match($1,"guard")!= 0 {i=i+1;
 rolename=substr($1,3,match($1,".-")-8);
-action=substr($1,match($1,"guard")+6,match($1,"tau")-match($1,"guard")-10);
+action=substr($1,match($1,"guard")+7,match($1,"tau")-match($1,"guard")-11);
+#print action;
 state=substr(action,1,match(action,"_")-1);
-pos=match(action,"_")+1;
+#print state;
+pos=match(action,"_")+2;
+#print pos;
+#print substr(action,length(action)-6,2);
 if (substr(action,length(action)-6,2)=="IN") {event="inbound action"; end=pos+7};
 if (substr(action,length(action)-6,2)=="UT") {event="outbound action"; end=pos+8};
-message=substr(action,pos,length(action)-end);
+message=substr(action,pos,length(action)-end-1);
 print i". " rolename, "in state",state, "performs", event, message}
 END {if (i==0) 
 {print "There is no buffer overflow, the protocol is bounded."}
@@ -180,7 +184,7 @@ echo "*** BOUNDEDNESS (under fairness) *** "
 awk -F ";" 'BEGIN {i=0; print "------------------------------------"}   match($1,"guard")!= 0 {i=i+1;
 rolename=substr($1,3,match($1,"._")-3);
 action=substr($1,match($1,"guard")+6,match($1,"\\(\\)")-match($1,"guard")-6);
-state=substr(action,1,match(action,"_")-1);
+state=substr(action,1,match(action,"_")-1); 
 pos=match(action,"_")+1;
 if (substr(action,length(action)-6,2)=="IN") {event="inbound action"; end=pos+7};
 if (substr(action,length(action)-6,2)=="UT") {event="outbound action"; end=pos+8};

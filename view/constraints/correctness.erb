@@ -1,0 +1,12 @@
+*** CORRECTNESS ***
+-------------------
+<%= @trace %>
+% if @matches.empty?
+There are no invalid states reachable in the protocol.
+Note that if there is a buffer overflow, then there are
+no invalid states only up to the given buffer capacity.
+% else
+---
+The trace above shows that an invalid state can be reached.
+% end
+

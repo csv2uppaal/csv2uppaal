@@ -10,8 +10,8 @@ class Protocol < ProtocolObject
   
   def initialize(args, text, parent)
     @name = args["name"]
-    @medium =   $options[:medium]   || args["medium"].upcase
-    @capacity = $options[:capacity] || args["capacity"].to_i 
+    @medium =   Opt.medium   || args["medium"].upcase
+    @capacity = Opt.capacity || args["capacity"].to_i 
     @roles = []
     @messages = [] # These are the pre-defined message (defined soon in the xml, and not "used" yet)
     @roles_in_message = Hash.new

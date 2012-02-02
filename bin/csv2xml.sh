@@ -28,7 +28,7 @@ awk -F ";" '
   function strip(s) 
      { return substr(s,2,length(s)-2)}
   function rulein(state, message, action) 
-     { print "\t<rule id=\""state"_"message"_INBOUND\">";
+     { print "\t<rule id=\""state"__"message"__INBOUND\">";
        print "\t\t<pre>";
        print "\t\t\t<current_state>"state"</current_state>";
        print "\t\t\t<received_message>"message"</received_message>";
@@ -40,7 +40,7 @@ awk -F ";" '
        print "\t\t</post>";
        print "\t</rule>\n"  }
   function ruleout(state, message, action) 
-     { print "\t<rule id=\""state"_"message"_OUTBOUND\">";
+     { print "\t<rule id=\""state"__"message"__OUTBOUND\">";
        print "\t\t<pre>";
        print "\t\t\t<current_state>"state"</current_state>";
        print "\t\t</pre>";
