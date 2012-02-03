@@ -55,8 +55,6 @@ Check the README file in the tool distribution for info how to intall UPPAAL.
    
 EOS
 
-class VerifytaError<StandardError; end
-
 raise RuntimeError, "Couldn't find verifyta."
 
 end
