@@ -1,0 +1,36 @@
+"PROTOCOL";"Enhanced BAwCC";"STUTT_FIFO";4;"Cell D1: Medium capacity";;;;;;;;;;;;;;
+;;"Cell C1: Choice of Medium: SET, BAG, FIFO, STUTT_FIFO";;;;;;;;;;;;;;;;
+"ROLE";"PARTICIPANT";;;;;;;;;;;;;;;;;
+"STATES";;"Active";"Canceling";"Completing";"Completed";"Closing";"Compensating";"FailingActive";"FailingCanceling";"FailingCompleting";"FailingCompensating";"NotCompleting";"Exiting";"EndedCanceled*";"EndedClosed*";"EndedCompensated*";"Ended*";
+"OUT";"Exit_p";",Exiting";;",Exiting";;;;;;;;;",Exiting";;;;;
+"OUT";"Completed_p";;;",Completed";",Completed";;;;;;;;;;;;;
+"OUT";"Fail_p";",FailingActive";",FailingCanceling";",FailingCompleting";;;",FailingCompensating";",FailingActive";",FailingCanceling";",FailingCompleting";",FailingCompensating";;;;;;;
+"OUT";"CannotComplete_p";",NotCompleting";;",NotCompleting";;;;;;;;",NotCompleting";;;;;;
+"OUT";"Canceled_p";;",EndedCanceled";;;;;;;;;;;",EndedCanceled";;;;
+"OUT";"Closed_p";;;;;",EndedClosed";;;;;;;;;",EndedClosed";;;
+"OUT";"Compensated_p";;;;;;",EndedCompensated";;;;;;;;;",EndedCompensated";;
+"IN";"Cancel_c";",Canceling";",Canceling";",Canceling";"Completed_p,Completed";",Closing";",Compensating";"Fail_p,FailingActive";"Fail_p,FailingCanceling";"Fail_p,FailingCompleting";",FailingCompensating";"CannotComplete_p,NotCompleting";"Exit_p,Exiting";"Canceled_p,EndedCanceled";",EndedClosed";",EndedCompensated";",Ended";
+"IN";"Complete_c";",Completing";",Canceling";",Completing";"Completed_p,Completed";",Closing";",Compensating";"Fail_p,FailingActive";"Fail_p,FailingCanceling";"Fail_p,FailingCompleting";",FailingCompensating";"CannotComplete_p,NotCompleting";"Exit_p,Exiting";"Fail_p,EndedCanceled";"Fail_p,EndedClosed";"Fail_p,EndedCompensated";",Ended";
+"IN";"Close_c";",Invalid";",Invalid";",Invalid";",Closing";",Closing";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedCanceled";"Closed_p,EndedClosed";",EndedCompensated";",Ended";
+"IN";"Compensate_c";",Invalid";",Invalid";",Invalid";",Compensating";",Invalid";",Compensating";",Invalid";",Invalid";",Invalid";"Fail_p,FailingCompensating";",Invalid";",Invalid";",EndedCanceled";",EndedClosed";"Compensated_p,EndedCompensated";",Ended";
+"IN";"Failed_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Ended";",Ended";",Ended";",Invalid";",Invalid";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended";
+"IN";"Exited_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended";
+"IN";"NotCompleted_c";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",EndedCanceled";",EndedClosed";",EndedCompensated";",Ended";
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+"ROLE";"COORDINATOR";;;;;;;;;;;;;;;;;
+"STATES";;"Active";"CancelingActive";"CancelingCompleting";"Completing";"Completed";"Closing";"Compensating";"FailingActive";"FailingCanceling";"FailingCompleting";"FailingCompensating";"NotCompleting";"Exiting";"EndedFailed*";"EndedExited*";"EndedNotCompleted*";"Ended*"
+"OUT";"Cancel_c";",CancelingActive";",CancelingActive";",CancelingCompleting";",CancelingCompleting";;;;;;;;;;;;;
+"OUT";"Complete_c";",Completing";;;",Completing";;;;;;;;;;;;;
+"OUT";"Close_c";;;;;",Closing";",Closing";;;;;;;;;;;
+"OUT";"Compensate_c";;;;;",Compensating";;",Compensating";;;;;;;;;;
+"OUT";"Failed_c";;;;;;;;",EndedFailed";",EndedFailed";",EndedFailed";",EndedFailed";;;",EndedFailed";;;
+"OUT";"Exited_c";;;;;;;;;;;;;",EndedExited";;",EndedExited";;
+"OUT";"NotCompleted_c";;;;;;;;;;;;",EndedNotCompleted";;;;",EndedNotCompleted";
+"IN";"Exit_p";",Exiting";",Exiting";",Exiting";",Exiting";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Exiting";",EndedFailed";"Exited_c,EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Completed_p";",Invalid";",Invalid";",Completed";",Completed";",Completed";"Close_c,Closing";"Compensate_c,Compensating";",Invalid";",Invalid";",Invalid";",FailingCompensating";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Fail_p";",FailingActive";",FailingCanceling";",FailingCanceling";",FailingCompleting";",Invalid";",Invalid";",FailingCompensating";",FailingActive";",FailingCanceling";",FailingCompleting";",FailingCompensating";",Invalid";",Invalid";"Failed_c,EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"CannotComplete_p";",NotCompleting";",NotCompleting";",NotCompleting";",NotCompleting";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",NotCompleting";",Invalid";",EndedFailed";",EndedExited";"NotCompleted_c,EndedNotCompleted";",Ended"
+"IN";"Canceled_p";",Invalid";",Ended";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Closed_p";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"
+"IN";"Compensated_p";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Ended";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",Invalid";",EndedFailed";",EndedExited";",EndedNotCompleted";",Ended"

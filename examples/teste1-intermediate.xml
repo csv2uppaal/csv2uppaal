@@ -1,0 +1,2807 @@
+<protocol name="Enhanced BAwCC" medium="STUTT_FIFO" capacity="4">
+	<messages>
+		<message>Cancel_c</message>
+		<message>Canceled_p</message>
+		<message>CannotComplete_p</message>
+		<message>Close_c</message>
+		<message>Closed_p</message>
+		<message>Compensate_c</message>
+		<message>Compensated_p</message>
+		<message>Complete_c</message>
+		<message>Completed_p</message>
+		<message>Exited_c</message>
+		<message>Exit_p</message>
+		<message>Failed_c</message>
+		<message>Fail_p</message>
+		<message>NotCompleted_c</message>
+	</messages>
+
+<role name="PARTICIPANT">
+	<states>
+		<state type="initial">Active</state>
+		<state>Canceling</state>
+		<state>Completing</state>
+		<state>Completed</state>
+		<state>Closing</state>
+		<state>Compensating</state>
+		<state>FailingActive</state>
+		<state>FailingCanceling</state>
+		<state>FailingCompleting</state>
+		<state>FailingCompensating</state>
+		<state>NotCompleting</state>
+		<state>Exiting</state>
+		<state type="final">EndedCanceled</state>
+		<state type="final">EndedClosed</state>
+		<state type="final">EndedCompensated</state>
+		<state type="final">Ended</state>
+		<state>Invalid</state>
+	</states>
+	<rule id="Active__Exit_p__OUTBOUND">
+		<pre>
+			<current_state>Active</current_state>
+		</pre>
+		<post>
+			<send_message>Exit_p</send_message>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Exit_p__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>Exit_p</send_message>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Exit_p__OUTBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+		</pre>
+		<post>
+			<send_message>Exit_p</send_message>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Completed_p__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>Completed_p</send_message>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Completed_p__OUTBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+		</pre>
+		<post>
+			<send_message>Completed_p</send_message>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>Active</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Fail_p__OUTBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__CannotComplete_p__OUTBOUND">
+		<pre>
+			<current_state>Active</current_state>
+		</pre>
+		<post>
+			<send_message>CannotComplete_p</send_message>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__CannotComplete_p__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>CannotComplete_p</send_message>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__CannotComplete_p__OUTBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+		</pre>
+		<post>
+			<send_message>CannotComplete_p</send_message>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Canceled_p__OUTBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+		</pre>
+		<post>
+			<send_message>Canceled_p</send_message>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Canceled_p__OUTBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+		</pre>
+		<post>
+			<send_message>Canceled_p</send_message>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Closed_p__OUTBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+		</pre>
+		<post>
+			<send_message>Closed_p</send_message>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Closed_p__OUTBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+		</pre>
+		<post>
+			<send_message>Closed_p</send_message>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Compensated_p__OUTBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+		</pre>
+		<post>
+			<send_message>Compensated_p</send_message>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Compensated_p__OUTBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+		</pre>
+		<post>
+			<send_message>Compensated_p</send_message>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Canceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Canceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Canceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Completed_p</send_message>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Cancel_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Cancel_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Cancel_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Cancel_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Cancel_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>CannotComplete_p</send_message>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Exit_p</send_message>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Cancel_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<send_message>Canceled_p</send_message>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Cancel_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Cancel_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Cancel_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Cancel_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Complete_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Completing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Complete_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Canceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Complete_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Completing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Complete_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Completed_p</send_message>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Complete_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Complete_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Complete_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Complete_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Complete_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Complete_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Complete_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>CannotComplete_p</send_message>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Complete_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Exit_p</send_message>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Complete_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Complete_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Complete_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Complete_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Complete_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Close_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Close_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Close_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Close_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Close_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Close_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Close_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Close_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Close_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Close_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Close_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Close_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Close_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Close_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<send_message>Closed_p</send_message>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Close_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Close_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Close_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Compensate_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Compensate_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Compensate_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Compensate_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<send_message>Fail_p</send_message>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Compensate_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Compensate_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Compensate_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Compensate_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<send_message>Compensated_p</send_message>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Compensate_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Compensate_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Failed_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Failed_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Failed_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Failed_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Failed_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Failed_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Failed_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Failed_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Failed_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Failed_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Failed_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Failed_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Failed_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Failed_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Failed_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Failed_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Failed_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Exited_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__Exited_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Exited_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Exited_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Exited_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Exited_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Exited_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Exited_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Exited_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Exited_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Exited_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Exited_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__Exited_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__Exited_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__Exited_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Exited_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Exited_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Canceling__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Canceling</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCanceled__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>EndedCanceled</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCanceled</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedClosed__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>EndedClosed</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedClosed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedCompensated__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>EndedCompensated</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>EndedCompensated</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__NotCompleted_c__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>NotCompleted_c</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+</role>
+
+<role name="COORDINATOR">
+	<states>
+		<state type="initial">Active</state>
+		<state>CancelingActive</state>
+		<state>CancelingCompleting</state>
+		<state>Completing</state>
+		<state>Completed</state>
+		<state>Closing</state>
+		<state>Compensating</state>
+		<state>FailingActive</state>
+		<state>FailingCanceling</state>
+		<state>FailingCompleting</state>
+		<state>FailingCompensating</state>
+		<state>NotCompleting</state>
+		<state>Exiting</state>
+		<state type="final">EndedFailed</state>
+		<state type="final">EndedExited</state>
+		<state type="final">EndedNotCompleted</state>
+		<state type="final">Ended</state>
+		<state>Invalid</state>
+	</states>
+	<rule id="Active__Cancel_c__OUTBOUND">
+		<pre>
+			<current_state>Active</current_state>
+		</pre>
+		<post>
+			<send_message>Cancel_c</send_message>
+			<next_state>CancelingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Cancel_c__OUTBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+		</pre>
+		<post>
+			<send_message>Cancel_c</send_message>
+			<next_state>CancelingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Cancel_c__OUTBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+		</pre>
+		<post>
+			<send_message>Cancel_c</send_message>
+			<next_state>CancelingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Cancel_c__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>Cancel_c</send_message>
+			<next_state>CancelingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Complete_c__OUTBOUND">
+		<pre>
+			<current_state>Active</current_state>
+		</pre>
+		<post>
+			<send_message>Complete_c</send_message>
+			<next_state>Completing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Complete_c__OUTBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+		</pre>
+		<post>
+			<send_message>Complete_c</send_message>
+			<next_state>Completing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Close_c__OUTBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+		</pre>
+		<post>
+			<send_message>Close_c</send_message>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Close_c__OUTBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+		</pre>
+		<post>
+			<send_message>Close_c</send_message>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Compensate_c__OUTBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+		</pre>
+		<post>
+			<send_message>Compensate_c</send_message>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Compensate_c__OUTBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+		</pre>
+		<post>
+			<send_message>Compensate_c</send_message>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Failed_c__OUTBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Failed_c__OUTBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Failed_c__OUTBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Failed_c__OUTBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Failed_c__OUTBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Exited_c__OUTBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+		</pre>
+		<post>
+			<send_message>Exited_c</send_message>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Exited_c__OUTBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+		</pre>
+		<post>
+			<send_message>Exited_c</send_message>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__NotCompleted_c__OUTBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+		</pre>
+		<post>
+			<send_message>NotCompleted_c</send_message>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__NotCompleted_c__OUTBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+		</pre>
+		<post>
+			<send_message>NotCompleted_c</send_message>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Exit_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Exit_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Exit_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Exit_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Exit_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Exit_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Exit_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Exit_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Exit_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Exit_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Exit_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Exit_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Exit_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Exiting</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Exit_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Exit_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<send_message>Exited_c</send_message>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Exit_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Exit_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Exit_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Completed_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Completed_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Completed_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Completed_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Completed_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Completed</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Completed_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<send_message>Close_c</send_message>
+			<next_state>Closing</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Completed_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<send_message>Compensate_c</send_message>
+			<next_state>Compensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Completed_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Completed_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Completed_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Completed_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Completed_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Completed_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Completed_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Completed_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Completed_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Completed_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Completed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Fail_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Fail_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Fail_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Fail_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Fail_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Fail_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Fail_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Fail_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingActive</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Fail_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCanceling</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Fail_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Fail_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>FailingCompensating</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Fail_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Fail_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Fail_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<send_message>Failed_c</send_message>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Fail_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Fail_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Fail_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Fail_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>NotCompleting</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<send_message>NotCompleted_c</send_message>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__CannotComplete_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>CannotComplete_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Canceled_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Canceled_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Canceled_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Canceled_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Canceled_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Canceled_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Canceled_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Canceled_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Canceled_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Canceled_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Canceled_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Canceled_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Closed_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Closed_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Closed_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Closed_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Closed_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Closed_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Closed_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Closed_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Closed_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Closed_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Closed_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Closed_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Closed_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Closed_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Closed_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Closed_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Closed_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Closed_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="Active__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Active</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingActive__Compensated_p__INBOUND">
+		<pre>
+			<current_state>CancelingActive</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="CancelingCompleting__Compensated_p__INBOUND">
+		<pre>
+			<current_state>CancelingCompleting</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completing__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Completing</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Completed__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Completed</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Closing__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Closing</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Compensating__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Compensating</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingActive__Compensated_p__INBOUND">
+		<pre>
+			<current_state>FailingActive</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCanceling__Compensated_p__INBOUND">
+		<pre>
+			<current_state>FailingCanceling</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompleting__Compensated_p__INBOUND">
+		<pre>
+			<current_state>FailingCompleting</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="FailingCompensating__Compensated_p__INBOUND">
+		<pre>
+			<current_state>FailingCompensating</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="NotCompleting__Compensated_p__INBOUND">
+		<pre>
+			<current_state>NotCompleting</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="Exiting__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Exiting</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Invalid</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedFailed__Compensated_p__INBOUND">
+		<pre>
+			<current_state>EndedFailed</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedFailed</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedExited__Compensated_p__INBOUND">
+		<pre>
+			<current_state>EndedExited</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedExited</next_state>
+		</post>
+	</rule>
+
+	<rule id="EndedNotCompleted__Compensated_p__INBOUND">
+		<pre>
+			<current_state>EndedNotCompleted</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>EndedNotCompleted</next_state>
+		</post>
+	</rule>
+
+	<rule id="Ended__Compensated_p__INBOUND">
+		<pre>
+			<current_state>Ended</current_state>
+			<received_message>Compensated_p</received_message>
+		</pre>
+		<post>
+			<next_state>Ended</next_state>
+		</post>
+	</rule>
+
+</role>
+</protocol>
