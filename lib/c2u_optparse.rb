@@ -1,7 +1,7 @@
 require 'ostruct'
 require 'questionize'
 
-CSV2UPPAAL_VERSION = '1.2'
+CSV2UPPAAL_VERSION = '2.0'
 
 raise "Opt constant already defined" if defined? Opt
 
@@ -101,5 +101,6 @@ begin
 rescue => e
   puts "Error: #{e.message} [#{e.class}]"
   puts opts.help
+  exit 1
 end
 
