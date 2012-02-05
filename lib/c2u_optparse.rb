@@ -94,8 +94,11 @@ begin
     end
   end
 
-  unless File.exist? Opt.filename
-    raise ArgumentError, "File #{Opt.filename} doesn't exist."
+  unless Opt.filename
+    raise ArgumentError, "File missing."      
+    unless File.exist? Opt.filename
+      raise ArgumentError, "File #{Opt.filename} doesn't exist."      
+    end
   end
 
 rescue => e
