@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'csv'
+require 'pp'
 
 module Csv2Xml
   
@@ -12,7 +13,7 @@ module Csv2Xml
 
     # It has to keep track of the used messages
     @collected_messages = []
-    @collected_states = [] ### Atenção... não pode ser global... é por role... 
+    @collected_states = Hash.new {|hash, key| hash[key] = Array.new}
     @roles = []
     @states = Hash.new
     @rules = Hash.new {|hash, key| hash[key] = Array.new}
@@ -29,46 +30,44 @@ module Csv2Xml
           @roles.push row[1]
 
         when /^STATES$/i
-          @states[@roles.last] = row[2..-1]
+          @states[@roles.last] = row[2..-1].compact.map {|s| s.split(/(\*)/)}
 
-        when /^OUT$/i
-          rule_type = :outbound
-          send_message = row[1]   
+          # This guarantees all declared states even if unused be collected
+          @collected_states[@roles.last] |= @states[@roles.last].map {|s, f| s}
+
+        when /^(OUT|IN)$/i
+          message_1 = row[1]
           row[2..-1].each_with_index do |c, ix|
             next unless c  # Jump nil cells (if no rule is set for that specific msg/state combination)
-            received_message, next_state = c.split(",")
-            current_state = @states[@roles.last][ix]
+            message_2, next_state = c.split(",")
+            current_state = @states[@roles.last][ix][0]
+            if row[0] =~ /OUT/i
+              rule_type         = :outbound
+              send_message      = message_1
+              received_message  = message_2
+            else
+              rule_type         = :inbound
+              received_message  = message_1
+              send_message      = message_2
+            end
+
             @rules[@roles.last].push   :rule_type        => rule_type,
                                        :send_message     => send_message,
                                        :received_message => received_message,
                                        :current_state    => current_state,
                                        :next_state       => next_state
-            ms = [received_message, send_message]
-            ms.delete("")
-            @collected_messages |= ms # collecting the valid messages (globally)
+            @collected_messages |= [received_message, send_message] # collecting the valid messages (globally)
+            @collected_states[@roles.last] |= [current_state, next_state]
+            # Think about some sanity checking here
           end
-
-        when /^IN$/i
-          rule_type = :inbound
-          received_message = row[1]   
-          row[2..-1].each_with_index do |c, ix|
-            next unless c  # Jump nil cells (if no rule is set for that specific msg/state combination)
-            send_message, next_state = c.split(",")
-            current_state = @states[@roles.last][ix]
-            @rules[@roles.last].push   :rule_type        => rule_type,
-                                       :send_message     => send_message,
-                                       :received_message => received_message,
-                                       :current_state    => current_state,
-                                       :next_state       => next_state
-            ms = [received_message, send_message]
-            ms.delete("")
-            @collected_messages |= ms # collecting the valid messages (globally)
-          end
-        when nil
+        when nil  # Just ignore
         else
-          raise SyntaxError, %|The String #{row[1]} is not valid!|
+          raise SyntaxError, %|The String #{row[0]} is not valid as first collumn!|
       end
-    end 
+    end
+
+    @collected_messages -= ['']
+    @collected_messages.sort!
     puts          %|<protocol name="#{@protocol_name}" medium="#{@protocol_medium}" capacity="#{@protocol_capacity}">|
     puts          %|  <messages>|
     @collected_messages.each do |m|
@@ -79,10 +78,18 @@ module Csv2Xml
     @roles.each do |role|
       puts        %|  <role name="#{role}">|
       puts        %|    <states>|
-      puts        %|      <state type="initial">#{@states[role][0]}</state>|
-      @states[role][1..-1].each do |state|
-        if state =~ /^(.*)\*$/
-          puts    %|      <state type="final">#{$1}</state>|
+      puts        %|      <state type="initial">#{@states[role][0][0]}</state>|
+      remaining_states = (@collected_states[role] - @states[role][0][0,1])
+      remaining_states.each do |state|
+#        p @states[role]
+#        p state
+        state_info = @states[role].assoc(state)
+#        p state_info
+        if state_info.nil?
+#          puts "State #{state} used but not previously declared (check for typos)" #unless state == "Invalid"
+          puts    %|      <state>#{state}</state>|
+        elsif state_info[1] == '*'
+          puts    %|      <state type="final">#{state}</state>|
         else
           puts    %|      <state>#{state}</state>|
         end
@@ -99,16 +106,16 @@ module Csv2Xml
         puts      %|        <current_state>#{rule[:current_state]}</current_state>| unless rule[:current_state].empty?
         puts      %|        <received_message>#{rule[:received_message]}</received_message>| unless rule[:received_message].empty?
         puts      %|      </pre>|
-        puts      %|      <pre>|
+        puts      %|      <post>|
         puts      %|        <send_message>#{rule[:send_message]}</send_message>| unless rule[:send_message].empty?
         puts      %|        <next_state>#{rule[:next_state]}</next_state>| unless rule[:next_state].empty?
-        puts      %|      </pre>|
+        puts      %|      </post>|
         puts      %|    </rule>|
         puts
       end
       puts        %|  </role>|
-      puts
     end
+    puts          %|</protocol>|
   end
 end
 

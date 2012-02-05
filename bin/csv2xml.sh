@@ -12,7 +12,7 @@ awk -F ";" 'function strip(s){ return substr(s,2,length(s)-2)}
 
 #removes duplicates of messages
 sort tmp1.xml | uniq > tmp2.xml
-rm tmp1.xml
+#rm tmp1.xml
 awk 'BEGIN {print "\t<messages>"; last="xxxxx"}
  { if ("*"== substr($1,length($1),1)) 
 {print "\t\t<message type=\"unordered\">"substr($1,1,length($1)-1)"</message>";
@@ -22,7 +22,7 @@ awk 'BEGIN {print "\t<messages>"; last="xxxxx"}
   END {if (last != "xxxxx") {print "\t\t<message>"last"</message>";}
        print "\t</messages>"}' tmp2.xml
 echo
-rm tmp2.xml
+#rm tmp2.xml
 
 awk -F ";" '
   function strip(s) 
