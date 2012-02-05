@@ -26,7 +26,7 @@ OUT_DIR=File.dirname(Opt.filename)
 
 # TODO: Check Mac GUI with the new tree layout
 
-CSV2XML = File.join "#{BIN_DIR}", "csv2xml.sh"
+CSV2XML = File.join "#{BIN_DIR}", "csv2xml.rb"
 TMP_XML = File.join "#{OUT_DIR}", "tmp.xml"
 
 system "#{CSV2XML} \'#{Opt.filename}\' > \'#{TMP_XML}\'"
