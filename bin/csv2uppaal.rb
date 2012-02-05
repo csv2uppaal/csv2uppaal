@@ -47,16 +47,11 @@ VERIFYTAS = [LINUX_VERIFYTA, MAC_VERIFYTA, LOCAL_VERIFYTA]
 VERIFYTA = VERIFYTAS.find {|f| File.executable?(f) }
 
 unless VERIFYTA
-  puts <<EOS
+  puts "Error: the script was not able to find the UPPAAL engine file verifyta in any of the following locations."
+  puts "#{VERIFYTAS.inspect}"
+  puts "Check the README file in the tool distribution for info how to intall UPPAAL."
 
-Error: the script was not able to find the UPPAAL engine file verifyta in any of the following locations.
-#{VERIFYTAS.inspect}
-Check the README file in the tool distribution for info how to intall UPPAAL.
-   
-EOS
-
-raise RuntimeError, "Couldn't find verifyta."
-
+  raise RuntimeError, "Couldn't find verifyta."
 end
 
 constraints = 
