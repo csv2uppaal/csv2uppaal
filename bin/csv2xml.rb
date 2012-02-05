@@ -17,6 +17,7 @@ module Csv2Xml
     @roles = []
     @states = Hash.new
     @rules = Hash.new {|hash, key| hash[key] = Array.new}
+    @messages_ord = Hash.new
 
     CSV.foreach(csv_file, col_sep: ";") do |row|
       case row[0]
@@ -35,7 +36,7 @@ module Csv2Xml
           # This guarantees all declared states even if unused be collected
           @collected_states[@roles.last] |= @states[@roles.last].map {|s, f| s}
 
-        when /^(OUT|IN)$/i
+        when /^(OUT|IN)(\*?)$/i
           message_1 = row[1]
           row[2..-1].each_with_index do |c, ix|
             next unless c  # Jump nil cells (if no rule is set for that specific msg/state combination)
@@ -45,10 +46,16 @@ module Csv2Xml
               rule_type         = :outbound
               send_message      = message_1
               received_message  = message_2
+              if row[0] =~ /(\*)$/
+                @messages_ord[send_message] = :unordered
+              end
             else
               rule_type         = :inbound
               received_message  = message_1
               send_message      = message_2
+              if row[0] =~ /(\*)$/
+                @messages_ord[received_message] = :unordered
+              end
             end
 
             @rules[@roles.last].push   :rule_type        => rule_type,
@@ -71,7 +78,7 @@ module Csv2Xml
     puts          %|<protocol name="#{@protocol_name}" medium="#{@protocol_medium}" capacity="#{@protocol_capacity}">|
     puts          %|  <messages>|
     @collected_messages.each do |m|
-      puts        %|     <message>#{m}</message>|
+      puts        %|     <message#{@messages_ord[m] ? ' type="unordered"' : ''}>#{m}</message>|
     end
     puts          %|  </messages>|
     puts
@@ -79,14 +86,14 @@ module Csv2Xml
       puts        %|  <role name="#{role}">|
       puts        %|    <states>|
       puts        %|      <state type="initial">#{@states[role][0][0]}</state>|
-      remaining_states = (@collected_states[role] - @states[role][0][0,1])
+      remaining_states = (@collected_states[role] - @states[role][0][0,1]) | ["Invalid"] # Used or not, "Invalid" is always there.
       remaining_states.each do |state|
 #        p @states[role]
 #        p state
         state_info = @states[role].assoc(state)
 #        p state_info
         if state_info.nil?
-#          puts "State #{state} used but not previously declared (check for typos)" #unless state == "Invalid"
+          raise "State '#{state}' used but not previously declared (check for typos)" unless state == "Invalid"
           puts    %|      <state>#{state}</state>|
         elsif state_info[1] == '*'
           puts    %|      <state type="final">#{state}</state>|
