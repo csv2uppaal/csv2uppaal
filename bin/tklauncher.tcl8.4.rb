@@ -158,7 +158,7 @@ cmd_line = Proc.new do
   x_value = ( ($x.value =~ /^ *\d+ *$/) ? "-x #{$x.value.to_i}" : "") 
   y_value = ( ($y.value =~ /^ *\d+ *$/) ? "-y #{$y.value.to_i}" : "") 
   
-  clstr = "./csv2uppaal.sh " +
+  clstr = File.join(BIN_DIR, "csv2uppaal.rb").to_syspath.to_s +
   [$ochk, $tchk, $ichk, $fchk].map {|c| c.value }.join(" ") + 
     " #{q_value}" + 
     " #{c_value}" +
