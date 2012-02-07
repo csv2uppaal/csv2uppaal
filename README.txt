@@ -1,25 +1,25 @@
 ************** 
-csv2uppaal 1.1 - USERS GUIDE 
+csv2uppaal 2.2 - USERS GUIDE 
 **************
 
 
 A. BEFORE RUNNING THE TOOL
 --------------------------
-The tool chain relies on bash, awk and ruby. It was developed 
-and tested under Ubuntu GNU/Linux and Mac OS X. It can be run also 
-on MS Windows by installing these tools separately (see below), or 
-by using cygwin (recommended). A limited testing was done Win-Bash 
-that seems smaller and less 'intrusive' than cygwin.
+The tool chain on ruby. It was developed and tested under 
+Ubuntu GNU/Linux, Mac OS X and Windows XP. 
 
 Resources for MS Windows:
 [Ruby]: http://rubyinstaller.org/
-[CygWin]: http://www.cygwin.com/
-[Win-Bash]: http://sourceforge.net/projects/win-bash/files/shell-complete/latest/
+
+When installing Ruby on Windows with rubyinstaller,
+you should mark ON all 3 options:
+  * Install Tcl/Tk support
+  * Add ruby executable to your PATH
+  * Associate .rb and .rbw files with this Ruby installation
 
 We provide also a graphical GUI interface on top of the command line tool. 
 The GUI comes in two versions Tk and RubyCooca. More details 
-on how to run the GUI is given in README-GUI.txt (recommended for all
-Mac and Linux users).
+on how to run the GUI is given in README-GUI.txt.
 
 IMPORTANT: To run the protocol verification, the command line tool 
 verifyta coming with the distribution of UPPAAL is required,
@@ -36,15 +36,20 @@ http://www.it.uu.se/research/group/darts/uppaal/download.shtml
 IMPORTANT: If you are running 64 bit versions of linux or mac, download 
 and install the 64 bit development version of UPPAAL verifyta.
 
-On mac, copy (drag and drop) the file verifyta into the directory:
+On Mac, copy (drag and drop) the file verifyta into the directory:
 /Applications/
 
-On linux, copy verifyta into the directory (sudo cp verifyta /usr/local/bin):
+On GNU/Linux, copy verifyta into the directory (sudo cp verifyta /usr/local/bin):
 /usr/local/bin/
 
+On Windows, copy verifyta into the directory C:\Program Files\Uppaal\bin-Win32.
+
 Then csv2uppaal will be able to locate verifyta automatically.
+
+csv2uppaal will always search for verifyta on the current directory also.
+
 If you prefer to place the verifyta in other directory, you need 
-to modify the path in the script csv2uppaal.sh manually.
+to modify the path in the CONFIG file manually.
 
 TROUBLE-SHOOTING:
 
@@ -99,7 +104,7 @@ The tool for a protocol like STP is run by unzipping the archive,
 opening a terminal and entering the directory where the tool
 is located. The tool is then run by the command:
 
-./csv2uppaal.sh STP.csv
+./csv2uppaal.rb STP.csv
 
 If you are running Mac or Linux, we recommend that you use the
 GUI for verifying protocols as described in README-GUI.txt.
@@ -108,17 +113,17 @@ The following switches are available for changing various parameters
 of the protocol (if the same parameters are declared also in .csv file
 that the switches override these settings):
 
-csv2uppaal.sh <filename.csv> (verify the given protocol)
-csv2uppaal.sh -o (multiple channel optimization)
-csv2uppaal.sh -t 0 (default, finds some error trace)
-csv2uppaal.sh -t 1 (finds the shortest error trace)
-csv2uppaal.sh -m [set|bag|fifo|lossy|stutt] (override the default medium)
-csv2uppaal.sh -c capacity (sets the channel capacity to a positive integer)
-csv2uppaal.sh -i all messages treated as ordered (ignore unordered flag) 
-csv2uppaal.sh -d (do not delete the temporary files, debugging mode)
-csv2uppaal.sh -f termination with fairness (all executions successfully end)
-csv2uppaal.sh -x <value> sets MIN_DELAY constant for the fairness model
-csv2uppaal.sh -y <value> sets TIRE_OUT constant for the fairness model
-csv2uppaal.sh -h (shows this help)
+csv2uppaal.rb <filename.csv> (verify the given protocol)
+csv2uppaal.rb -o (multiple channel optimization)
+csv2uppaal.rb -t 0 (default, finds some error trace)
+csv2uppaal.rb -t 1 (finds the shortest error trace)
+csv2uppaal.rb -m [set|bag|fifo|lossy|stutt] (override the default medium)
+csv2uppaal.rb -c capacity (sets the channel capacity to a positive integer)
+csv2uppaal.rb -i all messages treated as ordered (ignore unordered flag) 
+csv2uppaal.rb -d (do not delete the temporary files, debugging mode)
+csv2uppaal.rb -f termination with fairness (all executions successfully end)
+csv2uppaal.rb -x <value> sets MIN_DELAY constant for the fairness model
+csv2uppaal.rb -y <value> sets TIRE_OUT constant for the fairness model
+csv2uppaal.rb -h (shows this help)
 
 
