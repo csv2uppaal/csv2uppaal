@@ -1,6 +1,6 @@
-************** 
-csv2uppaal 2.2 - USERS GUIDE 
-**************
+**********
+csv2uppaal - USERS GUIDE 
+**********
 
 
 A. BEFORE RUNNING THE TOOL
