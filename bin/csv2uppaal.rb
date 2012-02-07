@@ -8,7 +8,10 @@
 require "optparse"
 require 'rexml/document'
 
-libdir = File.join(File.dirname(__FILE__), '..', 'lib')
+rootdir = File.join File.dirname(__FILE__), '..'
+libdir = File.join rootdir, 'lib'
+
+load File.join rootdir, "CONFIG"
 
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include? libdir
 
@@ -38,13 +41,6 @@ end
 
 protocol = Parser.parse(TMP_XML)
 Render.renderize(protocol)
-
-LINUX_VERIFYTA="/usr/local/bin/verifyta"
-MAC_VERIFYTA="/Applications/verifyta"
-WIN_VERIFYTA="C:\\Arquivos de programas\\Uppaal\\bin-Win32\\verifyta.exe"
-LOCAL_VERIFYTA="./verifyta"
-
-VERIFYTAS = [LINUX_VERIFYTA, MAC_VERIFYTA, WIN_VERIFYTA, LOCAL_VERIFYTA]
 
 VERIFYTA = VERIFYTAS.find {|f| File.executable?(f) }
 

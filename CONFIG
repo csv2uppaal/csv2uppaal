@@ -1,0 +1,16 @@
+# verifyta path for every supported OS
+# You can change the values bellow to reflect your particular
+# verifyta intallation
+
+LINUX_VERIFYTA="/usr/local/bin/verifyta"
+MAC_VERIFYTA="/Applications/verifyta"
+WIN_VERIFYTA="C:\\Arquivos de programas\\Uppaal\\bin-Win32\\verifyta.exe"
+LOCAL_VERIFYTA="./verifyta"
+LOCAL_WIN_VERIFYTA="verifyta.exe" 
+
+VERIFYTAS = [LINUX_VERIFYTA, 
+             MAC_VERIFYTA, 
+             WIN_VERIFYTA, 
+             LOCAL_VERIFYTA, 
+             LOCAL_WIN_VERIFYTA]
+             
