@@ -18,8 +18,14 @@ module Csv2Xml
     @states = Hash.new
     @rules = Hash.new {|hash, key| hash[key] = Array.new}
     @messages_ord = Hash.new
-
-    CSV.foreach(csv_file, col_sep: ";") do |row|
+    
+    if CSV.const_defined? :Reader # Using CSV (1.8) or FasterCSV (1.9)
+      csv_rows = CSV.open(csv_file, 'r', ';').to_enum
+    else 
+      csv_rows = CSV.read(csv_file, :col_sep=>";")
+    end
+	
+    csv_rows.each do |row|
       case row[0]
         when /^PROTOCOL$/i
           raise SyntaxError, "Only one protocol per file is allowed" if @protocol_name
