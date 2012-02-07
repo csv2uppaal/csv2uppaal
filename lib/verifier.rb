@@ -1,23 +1,25 @@
 require 'erb'
 
+LIB_DIR=File.dirname(__FILE__)
+
 class VerifytaError<StandardError; end
 
 class Verifier
 
   def initialize(constraint)
     @constraint = constraint
-    @constraint_erb = File.join "..", "view", "constraints", constraint.to_s
+    @constraint_erb = File.join LIB_DIR, "..", "view", "constraints", constraint.to_s
     @constraint_erb += ".erb"
-    @trace_erb = File.join "..", "view", "trace.erb"
+    @trace_erb = File.join LIB_DIR, "..", "view", "trace.erb" 
     @matches = Array.new
-    raise Exception, "Can't read the view file #{@constraint_erb} or it doesn't exist!" unless File.readable? @constraint_erb
+	raise Exception, "Can't read the view file #{@constraint_erb} or it doesn't exist!" unless File.readable? @constraint_erb
   end
 
   def verify(protocol_name=Opt.protocol, constraint=@constraint)
     path = File.join OUT_DIR, protocol_name
     path_constraint = "#{path}-#{constraint}"
-
-    %x|#{VERIFYTA} -Y -o 2 #{Opt.trace} "#{path}.xml" "#{path_constraint}.q" 2> "#{path_constraint}.trc" > "#{path_constraint}.stdout"|
+	cmd = %|#{VERIFYTA.to_syspath} -Y -o 2 #{Opt.trace} #{(path+'.xml').to_syspath} #{(path_constraint+'.q').to_syspath} 2> #{(path_constraint+'.trc').to_syspath} > #{(path_constraint+'.stdout').to_syspath}|
+	%x|#{cmd}|
     raise VerifytaError, "Verifyta halted with the following message:\n---\n#{File.read(path_constraint+".trc")}\n" unless $?.success?
     
     File.foreach("#{path_constraint}.trc") do |line|
@@ -52,7 +54,7 @@ class Verifier
 
   def self.footer
     protocol_path = File.join OUT_DIR, Opt.protocol
-    footer_file = File.join "..", "view", "footer.erb"
+    footer_file = File.join OUT_DIR, "..", "view", "footer.erb"
     ERB.new(File.read(footer_file), nil, '%<>').result(binding)
   end
 

@@ -1,3 +1,5 @@
+require 'pathname'
+
 class XMLError < StandardError; end
 
 module SUHelperMethods
@@ -31,5 +33,34 @@ class Symbol
     else
       raise ArgumentError, "comparison of #{self.class} with #{other} failed"
     end
+  end
+end
+
+class String
+  def double_quoted
+    m = self.match /^["']*(.*?)["']*$/
+    %|"#{m[1]}"|
+  end
+
+  def unquoted
+    m = self.match /^["']*(.*?)["']*$/
+    m[1]
+  end
+
+  if File::ALT_SEPARATOR
+    def to_syspath
+      s = self.gsub File::SEPARATOR, File::ALT_SEPARATOR
+      Pathname.new s.double_quoted
+    end
+  else
+    def to_syspath
+      s = self.gsub "\\", "/" 
+      Pathname.new s.double_quoted
+    end
+  end
+
+  def to_rbpath
+    s = self.gsub "\\", "/"
+    Pathname.new s.double_quoted
   end
 end

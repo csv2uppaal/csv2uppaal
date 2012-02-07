@@ -29,7 +29,8 @@ OUT_DIR=File.dirname(Opt.filename)
 CSV2XML = File.join "#{BIN_DIR}", "csv2xml.rb"
 TMP_XML = File.join "#{OUT_DIR}", "tmp.xml"
 
-system "#{CSV2XML} \'#{Opt.filename}\' > \'#{TMP_XML}\'"
+cmd = %|ruby #{CSV2XML.to_syspath} #{Opt.filename.to_syspath} > #{TMP_XML.to_syspath}|
+%x|#{cmd}|
 
 unless File.exist? TMP_XML
   raise ArgumentError, "File #{TMP_XML} doesn't exist."
@@ -40,9 +41,10 @@ Render.renderize(protocol)
 
 LINUX_VERIFYTA="/usr/local/bin/verifyta"
 MAC_VERIFYTA="/Applications/verifyta"
+WIN_VERIFYTA="C:\\Arquivos de programas\\Uppaal\\bin-Win32\\verifyta.exe"
 LOCAL_VERIFYTA="./verifyta"
 
-VERIFYTAS = [LINUX_VERIFYTA, MAC_VERIFYTA, LOCAL_VERIFYTA]
+VERIFYTAS = [LINUX_VERIFYTA, MAC_VERIFYTA, WIN_VERIFYTA, LOCAL_VERIFYTA]
 
 VERIFYTA = VERIFYTAS.find {|f| File.executable?(f) }
 
