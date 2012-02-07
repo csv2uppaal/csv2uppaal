@@ -1,7 +1,7 @@
 require 'ostruct'
 require 'questionize'
 
-CSV2UPPAAL_VERSION = '2.0'
+CSV2UPPAAL_VERSION = '2.1'
 
 raise "Opt constant already defined" if defined? Opt
 
