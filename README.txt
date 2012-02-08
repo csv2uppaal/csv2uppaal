@@ -2,13 +2,16 @@
 csv2uppaal - USERS GUIDE 
 **********
 
-
 A. BEFORE RUNNING THE TOOL
 --------------------------
-The tool chain on ruby. It was developed and tested under 
-Ubuntu GNU/Linux, Mac OS X and Windows XP. 
+The tool chain is written in Ruby language. 
+It was developed and tested under Ubuntu GNU/Linux, 
+Mac OS X and Windows XP. 
 
-Resources for MS Windows:
+---
+* Installing Ruby on MS Windows:
+---
+
 [Ruby]: http://rubyinstaller.org/
 
 When installing Ruby on Windows with rubyinstaller,
@@ -16,6 +19,23 @@ you should mark ON all 3 options:
   * Install Tcl/Tk support
   * Add ruby executable to your PATH
   * Associate .rb and .rbw files with this Ruby installation
+
+---
+* Installing Ruby using RVM (mainly Linux and Mac)
+---
+
+If you plan to use csv2uppaal on a ruby installed using RVM note that,
+to enable Tk support, you should use "enable-pthread" command line option.
+
+rvm install 1.9.3 --enable-pthread
+
+or (if you have already installed a ruby using RVM, reinstall it)
+
+rvm reinstall 1.9.3 --enable-pthread
+
+---
+* The GUI
+---
 
 We provide also a graphical GUI interface on top of the command line tool. 
 The GUI comes in two versions Tk and RubyCooca. More details 
