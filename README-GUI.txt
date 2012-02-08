@@ -32,5 +32,8 @@ its bindings is here http://tkdocs.com/tutorial/install.html.
 We also tested it against RVM rubies.
 http://rvm.beginrescueend.com/
 
+When using RVM remember to enable pthreads as bellow.
+rvm install 1.9.3 --enable-pthread
+
 On Windows, if you have set up the Tcl/Tk checkbox on rubyinstaller
 everthing should run fine.
